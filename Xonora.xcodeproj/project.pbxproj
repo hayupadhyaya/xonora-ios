@@ -1,0 +1,818 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D861CD32F0FB2DD007D0C6A /* Color+Xonora.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */; };
+		1D861D2F2F110D01007D0C6A /* SendspinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1D861D2E2F110D01007D0C6A /* SendspinKit */; };
+		AAA00001 /* XonoraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00001 /* XonoraApp.swift */; };
+		AAA00002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00002 /* ContentView.swift */; };
+		AAA00003 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00003 /* LibraryView.swift */; };
+		AAA00004 /* AlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00004 /* AlbumDetailView.swift */; };
+		AAA00005 /* NowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00005 /* NowPlayingView.swift */; };
+		AAA00007 /* AlbumGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00007 /* AlbumGridItem.swift */; };
+		AAA00008 /* TrackRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00008 /* TrackRow.swift */; };
+		AAA00009 /* PlayerControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00009 /* PlayerControls.swift */; };
+		AAA00010 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00010 /* Track.swift */; };
+		AAA00011 /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00011 /* Album.swift */; };
+		AAA00012 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00012 /* Artist.swift */; };
+		AAA00013 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00013 /* Player.swift */; };
+		AAA00014 /* XonoraClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00014 /* XonoraClient.swift */; };
+		AAA00015 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00015 /* PlayerManager.swift */; };
+		AAA00016 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00016 /* LibraryViewModel.swift */; };
+		AAA00017 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00017 /* PlayerViewModel.swift */; };
+		AAA00018 /* SendspinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00019 /* SendspinClient.swift */; };
+		AAA00020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBB00020 /* Assets.xcassets */; };
+		AAA00024 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00024 /* SceneDelegate.swift */; };
+		AAA00025 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00025 /* CarPlaySceneDelegate.swift */; };
+		AAA00026 /* MetadataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00026 /* MetadataCache.swift */; };
+		AAA00027 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00027 /* ImageCache.swift */; };
+		AAA00028 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00028 /* Playlist.swift */; };
+		AAA00029 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00029 /* PlaylistDetailView.swift */; };
+		AAA00030 /* PlaylistGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00030 /* PlaylistGridItem.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Xonora.swift"; sourceTree = "<group>"; };
+		1D861CD42F110B8C007D0C6A /* COVERAGE_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = COVERAGE_SETUP.md; sourceTree = "<group>"; };
+		1D861CD52F110B8C007D0C6A /* tests.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = tests.yml; sourceTree = "<group>"; };
+		1D861CD82F110B8C007D0C6A /* 2025-01-21-resonate-kit-client.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "2025-01-21-resonate-kit-client.md"; sourceTree = "<group>"; };
+		1D861CD92F110B8C007D0C6A /* 2025-10-22-audio-player-implementation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "2025-10-22-audio-player-implementation.md"; sourceTree = "<group>"; };
+		1D861CDA2F110B8C007D0C6A /* 2025-10-24-audio-scheduler-design.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "2025-10-24-audio-scheduler-design.md"; sourceTree = "<group>"; };
+		1D861CDB2F110B8C007D0C6A /* 2025-10-24-audio-scheduler-implementation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "2025-10-24-audio-scheduler-implementation.md"; sourceTree = "<group>"; };
+		1D861CDC2F110B8C007D0C6A /* 2025-10-26-opus-flac-decoder-implementation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "2025-10-26-opus-flac-decoder-implementation.md"; sourceTree = "<group>"; };
+		1D861CDE2F110B8C007D0C6A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		1D861CDF2F110B8C007D0C6A /* CODEC_SUPPORT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CODEC_SUPPORT.md; sourceTree = "<group>"; };
+		1D861CE02F110B8C007D0C6A /* FIXES_APPLIED.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIXES_APPLIED.md; sourceTree = "<group>"; };
+		1D861CE12F110B8C007D0C6A /* FLAC_QUICK_REFERENCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FLAC_QUICK_REFERENCE.md; sourceTree = "<group>"; };
+		1D861CE22F110B8C007D0C6A /* FLAC_TEST_RESULTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FLAC_TEST_RESULTS.md; sourceTree = "<group>"; };
+		1D861CE32F110B8C007D0C6A /* GO-VS-SWIFT-COMPARISON.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "GO-VS-SWIFT-COMPARISON.md"; sourceTree = "<group>"; };
+		1D861CE42F110B8C007D0C6A /* HIRES_AUDIO_AUDIT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = HIRES_AUDIO_AUDIT.md; sourceTree = "<group>"; };
+		1D861CE52F110B8C007D0C6A /* IMPLEMENTATION-SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "IMPLEMENTATION-SUMMARY.md"; sourceTree = "<group>"; };
+		1D861CE62F110B8C007D0C6A /* METADATA_ARCHITECTURE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA_ARCHITECTURE.md; sourceTree = "<group>"; };
+		1D861CE72F110B8C007D0C6A /* OPUS_FLAC_DECODER_ANALYSIS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = OPUS_FLAC_DECODER_ANALYSIS.md; sourceTree = "<group>"; };
+		1D861CE82F110B8C007D0C6A /* OPUS_TEST_SUMMARY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = OPUS_TEST_SUMMARY.md; sourceTree = "<group>"; };
+		1D861CE92F110B8C007D0C6A /* SWIFT_BRINGUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SWIFT_BRINGUP.md; sourceTree = "<group>"; };
+		1D861CEA2F110B8C007D0C6A /* TESTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTING.md; sourceTree = "<group>"; };
+		1D861CEC2F110B8C007D0C6A /* CLIPlayer */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = CLIPlayer; sourceTree = "<group>"; };
+		1D861CEE2F110B8C007D0C6A /* test-5min.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "test-5min.sh"; sourceTree = "<group>"; };
+		1D861CF02F110B8C007D0C6A /* AudioDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDecoder.swift; sourceTree = "<group>"; };
+		1D861CF12F110B8C007D0C6A /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		1D861CF22F110B8C007D0C6A /* AudioScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioScheduler.swift; sourceTree = "<group>"; };
+		1D861CF32F110B8C007D0C6A /* BufferManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManager.swift; sourceTree = "<group>"; };
+		1D861CF42F110B8C007D0C6A /* PCMUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCMUtilities.swift; sourceTree = "<group>"; };
+		1D861CF62F110B8C007D0C6A /* ConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionState.swift; sourceTree = "<group>"; };
+		1D861CF72F110B8C007D0C6A /* PlayerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerConfiguration.swift; sourceTree = "<group>"; };
+		1D861CF82F110B8C007D0C6A /* SendspinClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinClient.swift; sourceTree = "<group>"; };
+		1D861CFA2F110B8C007D0C6A /* DiscoveredServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveredServer.swift; sourceTree = "<group>"; };
+		1D861CFB2F110B8C007D0C6A /* ServerDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDiscovery.swift; sourceTree = "<group>"; };
+		1D861CFD2F110B8C007D0C6A /* AudioCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCodec.swift; sourceTree = "<group>"; };
+		1D861CFE2F110B8C007D0C6A /* AudioFormatSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFormatSpec.swift; sourceTree = "<group>"; };
+		1D861CFF2F110B8C007D0C6A /* BinaryMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryMessage.swift; sourceTree = "<group>"; };
+		1D861D002F110B8C007D0C6A /* ClientRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientRole.swift; sourceTree = "<group>"; };
+		1D861D012F110B8C007D0C6A /* SendspinMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinMessage.swift; sourceTree = "<group>"; };
+		1D861D032F110B8C007D0C6A /* ClockSynchronizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSynchronizer.swift; sourceTree = "<group>"; };
+		1D861D052F110B8C007D0C6A /* WebSocketTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketTransport.swift; sourceTree = "<group>"; };
+		1D861D072F110B8C007D0C6A /* SendspinKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinKit.swift; sourceTree = "<group>"; };
+		1D861D0A2F110B8C007D0C6A /* AudioPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerTests.swift; sourceTree = "<group>"; };
+		1D861D0B2F110B8C007D0C6A /* BufferManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManagerTests.swift; sourceTree = "<group>"; };
+		1D861D0C2F110B8C007D0C6A /* FLACDecoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLACDecoderTests.swift; sourceTree = "<group>"; };
+		1D861D0D2F110B8C007D0C6A /* OpusDecoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpusDecoderTests.swift; sourceTree = "<group>"; };
+		1D861D0F2F110B8C007D0C6A /* SendspinClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinClientTests.swift; sourceTree = "<group>"; };
+		1D861D112F110B8C007D0C6A /* BinaryMessageIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryMessageIntegrationTests.swift; sourceTree = "<group>"; };
+		1D861D122F110B8C007D0C6A /* BufferManagerIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferManagerIntegrationTests.swift; sourceTree = "<group>"; };
+		1D861D132F110B8C007D0C6A /* ClockSyncIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSyncIntegrationTests.swift; sourceTree = "<group>"; };
+		1D861D142F110B8C007D0C6A /* MessageRoundTripTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRoundTripTests.swift; sourceTree = "<group>"; };
+		1D861D162F110B8C007D0C6A /* BinaryMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryMessageTests.swift; sourceTree = "<group>"; };
+		1D861D172F110B8C007D0C6A /* MessageEncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageEncodingTests.swift; sourceTree = "<group>"; };
+		1D861D182F110B8C007D0C6A /* StreamMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamMessageTests.swift; sourceTree = "<group>"; };
+		1D861D1A2F110B8C007D0C6A /* ClockSynchronizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClockSynchronizerTests.swift; sourceTree = "<group>"; };
+		1D861D1C2F110B8C007D0C6A /* WebSocketTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketTransportTests.swift; sourceTree = "<group>"; };
+		1D861D1E2F110B8C007D0C6A /* AudioSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSchedulerTests.swift; sourceTree = "<group>"; };
+		1D861D1F2F110B8C007D0C6A /* SendspinKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinKitTests.swift; sourceTree = "<group>"; };
+		1D861D222F110B8C007D0C6A /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1D861D232F110B8C007D0C6A /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		1D861D242F110B8C007D0C6A /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
+		1D861D252F110B8C007D0C6A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGELOG.md; sourceTree = "<group>"; };
+		1D861D262F110B8C007D0C6A /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1D861D272F110B8C007D0C6A /* Package.resolved */ = {isa = PBXFileReference; lastKnownFileType = text; path = Package.resolved; sourceTree = "<group>"; };
+		1D861D282F110B8C007D0C6A /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		1D861D292F110B8C007D0C6A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		1D861D2C2F110C3D007D0C6A /* SendspinKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SendspinKit.swift; path = SendspinKit/Sources/SendspinKit/SendspinKit.swift; sourceTree = "<group>"; };
+		BBB00001 /* XonoraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XonoraApp.swift; sourceTree = "<group>"; };
+		BBB00002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BBB00003 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		BBB00004 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
+		BBB00005 /* NowPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingView.swift; sourceTree = "<group>"; };
+		BBB00007 /* AlbumGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumGridItem.swift; sourceTree = "<group>"; };
+		BBB00008 /* TrackRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRow.swift; sourceTree = "<group>"; };
+		BBB00009 /* PlayerControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControls.swift; sourceTree = "<group>"; };
+		BBB00010 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		BBB00011 /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
+		BBB00012 /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
+		BBB00013 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		BBB00014 /* XonoraClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XonoraClient.swift; sourceTree = "<group>"; };
+		BBB00015 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
+		BBB00016 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		BBB00017 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		BBB00018 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBB00019 /* SendspinClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinClient.swift; sourceTree = "<group>"; };
+		BBB00020 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BBB00024 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		BBB00025 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		BBB00026 /* MetadataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataCache.swift; sourceTree = "<group>"; };
+		BBB00027 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		BBB00028 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
+		BBB00029 /* PlaylistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailView.swift; sourceTree = "<group>"; };
+		BBB00030 /* PlaylistGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistGridItem.swift; sourceTree = "<group>"; };
+		BBB00031 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		CCC00001 /* Xonora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Xonora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DDD00001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D861D2F2F110D01007D0C6A /* SendspinKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1D861CD62F110B8C007D0C6A /* workflows */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CD42F110B8C007D0C6A /* COVERAGE_SETUP.md */,
+				1D861CD52F110B8C007D0C6A /* tests.yml */,
+			);
+			path = workflows;
+			sourceTree = "<group>";
+		};
+		1D861CD72F110B8C007D0C6A /* .github */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CD62F110B8C007D0C6A /* workflows */,
+			);
+			path = .github;
+			sourceTree = "<group>";
+		};
+		1D861CDD2F110B8C007D0C6A /* plans */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CD82F110B8C007D0C6A /* 2025-01-21-resonate-kit-client.md */,
+				1D861CD92F110B8C007D0C6A /* 2025-10-22-audio-player-implementation.md */,
+				1D861CDA2F110B8C007D0C6A /* 2025-10-24-audio-scheduler-design.md */,
+				1D861CDB2F110B8C007D0C6A /* 2025-10-24-audio-scheduler-implementation.md */,
+				1D861CDC2F110B8C007D0C6A /* 2025-10-26-opus-flac-decoder-implementation.md */,
+			);
+			path = plans;
+			sourceTree = "<group>";
+		};
+		1D861CEB2F110B8C007D0C6A /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CDD2F110B8C007D0C6A /* plans */,
+				1D861CDE2F110B8C007D0C6A /* CHANGELOG.md */,
+				1D861CDF2F110B8C007D0C6A /* CODEC_SUPPORT.md */,
+				1D861CE02F110B8C007D0C6A /* FIXES_APPLIED.md */,
+				1D861CE12F110B8C007D0C6A /* FLAC_QUICK_REFERENCE.md */,
+				1D861CE22F110B8C007D0C6A /* FLAC_TEST_RESULTS.md */,
+				1D861CE32F110B8C007D0C6A /* GO-VS-SWIFT-COMPARISON.md */,
+				1D861CE42F110B8C007D0C6A /* HIRES_AUDIO_AUDIT.md */,
+				1D861CE52F110B8C007D0C6A /* IMPLEMENTATION-SUMMARY.md */,
+				1D861CE62F110B8C007D0C6A /* METADATA_ARCHITECTURE.md */,
+				1D861CE72F110B8C007D0C6A /* OPUS_FLAC_DECODER_ANALYSIS.md */,
+				1D861CE82F110B8C007D0C6A /* OPUS_TEST_SUMMARY.md */,
+				1D861CE92F110B8C007D0C6A /* SWIFT_BRINGUP.md */,
+				1D861CEA2F110B8C007D0C6A /* TESTING.md */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		1D861CED2F110B8C007D0C6A /* Examples */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CEC2F110B8C007D0C6A /* CLIPlayer */,
+			);
+			path = Examples;
+			sourceTree = "<group>";
+		};
+		1D861CEF2F110B8C007D0C6A /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CEE2F110B8C007D0C6A /* test-5min.sh */,
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
+		1D861CF52F110B8C007D0C6A /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CF02F110B8C007D0C6A /* AudioDecoder.swift */,
+				1D861CF12F110B8C007D0C6A /* AudioPlayer.swift */,
+				1D861CF22F110B8C007D0C6A /* AudioScheduler.swift */,
+				1D861CF32F110B8C007D0C6A /* BufferManager.swift */,
+				1D861CF42F110B8C007D0C6A /* PCMUtilities.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		1D861CF92F110B8C007D0C6A /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CF62F110B8C007D0C6A /* ConnectionState.swift */,
+				1D861CF72F110B8C007D0C6A /* PlayerConfiguration.swift */,
+				1D861CF82F110B8C007D0C6A /* SendspinClient.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		1D861CFC2F110B8C007D0C6A /* Discovery */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CFA2F110B8C007D0C6A /* DiscoveredServer.swift */,
+				1D861CFB2F110B8C007D0C6A /* ServerDiscovery.swift */,
+			);
+			path = Discovery;
+			sourceTree = "<group>";
+		};
+		1D861D022F110B8C007D0C6A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CFD2F110B8C007D0C6A /* AudioCodec.swift */,
+				1D861CFE2F110B8C007D0C6A /* AudioFormatSpec.swift */,
+				1D861CFF2F110B8C007D0C6A /* BinaryMessage.swift */,
+				1D861D002F110B8C007D0C6A /* ClientRole.swift */,
+				1D861D012F110B8C007D0C6A /* SendspinMessage.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		1D861D042F110B8C007D0C6A /* Synchronization */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D032F110B8C007D0C6A /* ClockSynchronizer.swift */,
+			);
+			path = Synchronization;
+			sourceTree = "<group>";
+		};
+		1D861D062F110B8C007D0C6A /* Transport */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D052F110B8C007D0C6A /* WebSocketTransport.swift */,
+			);
+			path = Transport;
+			sourceTree = "<group>";
+		};
+		1D861D082F110B8C007D0C6A /* SendspinKit */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CF52F110B8C007D0C6A /* Audio */,
+				1D861CF92F110B8C007D0C6A /* Client */,
+				1D861CFC2F110B8C007D0C6A /* Discovery */,
+				1D861D022F110B8C007D0C6A /* Models */,
+				1D861D042F110B8C007D0C6A /* Synchronization */,
+				1D861D062F110B8C007D0C6A /* Transport */,
+				1D861D072F110B8C007D0C6A /* SendspinKit.swift */,
+			);
+			path = SendspinKit;
+			sourceTree = "<group>";
+		};
+		1D861D092F110B8C007D0C6A /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D082F110B8C007D0C6A /* SendspinKit */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		1D861D0E2F110B8C007D0C6A /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D0A2F110B8C007D0C6A /* AudioPlayerTests.swift */,
+				1D861D0B2F110B8C007D0C6A /* BufferManagerTests.swift */,
+				1D861D0C2F110B8C007D0C6A /* FLACDecoderTests.swift */,
+				1D861D0D2F110B8C007D0C6A /* OpusDecoderTests.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		1D861D102F110B8C007D0C6A /* Client */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D0F2F110B8C007D0C6A /* SendspinClientTests.swift */,
+			);
+			path = Client;
+			sourceTree = "<group>";
+		};
+		1D861D152F110B8C007D0C6A /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D112F110B8C007D0C6A /* BinaryMessageIntegrationTests.swift */,
+				1D861D122F110B8C007D0C6A /* BufferManagerIntegrationTests.swift */,
+				1D861D132F110B8C007D0C6A /* ClockSyncIntegrationTests.swift */,
+				1D861D142F110B8C007D0C6A /* MessageRoundTripTests.swift */,
+			);
+			path = Integration;
+			sourceTree = "<group>";
+		};
+		1D861D192F110B8C007D0C6A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D162F110B8C007D0C6A /* BinaryMessageTests.swift */,
+				1D861D172F110B8C007D0C6A /* MessageEncodingTests.swift */,
+				1D861D182F110B8C007D0C6A /* StreamMessageTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		1D861D1B2F110B8C007D0C6A /* Synchronization */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D1A2F110B8C007D0C6A /* ClockSynchronizerTests.swift */,
+			);
+			path = Synchronization;
+			sourceTree = "<group>";
+		};
+		1D861D1D2F110B8C007D0C6A /* Transport */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D1C2F110B8C007D0C6A /* WebSocketTransportTests.swift */,
+			);
+			path = Transport;
+			sourceTree = "<group>";
+		};
+		1D861D202F110B8C007D0C6A /* SendspinKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D0E2F110B8C007D0C6A /* Audio */,
+				1D861D102F110B8C007D0C6A /* Client */,
+				1D861D152F110B8C007D0C6A /* Integration */,
+				1D861D192F110B8C007D0C6A /* Models */,
+				1D861D1B2F110B8C007D0C6A /* Synchronization */,
+				1D861D1D2F110B8C007D0C6A /* Transport */,
+				1D861D1E2F110B8C007D0C6A /* AudioSchedulerTests.swift */,
+				1D861D1F2F110B8C007D0C6A /* SendspinKitTests.swift */,
+			);
+			path = SendspinKitTests;
+			sourceTree = "<group>";
+		};
+		1D861D212F110B8C007D0C6A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D202F110B8C007D0C6A /* SendspinKitTests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		1D861D2A2F110B8C007D0C6A /* SendspinKit */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CD72F110B8C007D0C6A /* .github */,
+				1D861CEB2F110B8C007D0C6A /* docs */,
+				1D861CED2F110B8C007D0C6A /* Examples */,
+				1D861CEF2F110B8C007D0C6A /* scripts */,
+				1D861D092F110B8C007D0C6A /* Sources */,
+				1D861D212F110B8C007D0C6A /* Tests */,
+				1D861D222F110B8C007D0C6A /* .gitignore */,
+				1D861D232F110B8C007D0C6A /* .swiftformat */,
+				1D861D242F110B8C007D0C6A /* .swiftlint.yml */,
+				1D861D252F110B8C007D0C6A /* CHANGELOG.md */,
+				1D861D262F110B8C007D0C6A /* LICENSE */,
+				1D861D272F110B8C007D0C6A /* Package.resolved */,
+				1D861D282F110B8C007D0C6A /* Package.swift */,
+				1D861D292F110B8C007D0C6A /* README.md */,
+			);
+			path = SendspinKit;
+			sourceTree = "<group>";
+		};
+		1D861D2B2F110C3D007D0C6A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D2C2F110C3D007D0C6A /* SendspinKit.swift */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EEE00001 = {
+			isa = PBXGroup;
+			children = (
+				EEE00002 /* Xonora */,
+				1D861D2B2F110C3D007D0C6A /* Frameworks */,
+				EEE00003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EEE00002 /* Xonora */ = {
+			isa = PBXGroup;
+			children = (
+				1D861D2A2F110B8C007D0C6A /* SendspinKit */,
+				BBB00001 /* XonoraApp.swift */,
+				BBB00031 /* Color+Extensions.swift */,
+				BBB00024 /* SceneDelegate.swift */,
+				BBB00018 /* Info.plist */,
+				BBB00020 /* Assets.xcassets */,
+				EEE00004 /* Models */,
+				EEE00005 /* Services */,
+				EEE00006 /* Views */,
+				EEE00008 /* ViewModels */,
+			);
+			path = Xonora;
+			sourceTree = "<group>";
+		};
+		EEE00003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CCC00001 /* Xonora.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EEE00004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */,
+				BBB00010 /* Track.swift */,
+				BBB00011 /* Album.swift */,
+				BBB00012 /* Artist.swift */,
+				BBB00013 /* Player.swift */,
+				BBB00028 /* Playlist.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EEE00005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00014 /* XonoraClient.swift */,
+				BBB00015 /* PlayerManager.swift */,
+				BBB00019 /* SendspinClient.swift */,
+				BBB00025 /* CarPlaySceneDelegate.swift */,
+				BBB00026 /* MetadataCache.swift */,
+				BBB00027 /* ImageCache.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EEE00006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00002 /* ContentView.swift */,
+				BBB00003 /* LibraryView.swift */,
+				BBB00004 /* AlbumDetailView.swift */,
+				BBB00005 /* NowPlayingView.swift */,
+				BBB00029 /* PlaylistDetailView.swift */,
+				EEE00007 /* Components */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EEE00007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00007 /* AlbumGridItem.swift */,
+				BBB00008 /* TrackRow.swift */,
+				BBB00009 /* PlayerControls.swift */,
+				BBB00030 /* PlaylistGridItem.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		EEE00008 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00016 /* LibraryViewModel.swift */,
+				BBB00017 /* PlayerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FFF00001 /* Xonora */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = GGG00002 /* Build configuration list for PBXNativeTarget "Xonora" */;
+			buildPhases = (
+				HHH00001 /* Sources */,
+				DDD00001 /* Frameworks */,
+				III00001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Xonora;
+			productName = Xonora;
+			productReference = CCC00001 /* Xonora.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		JJJ00001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 2610;
+				TargetAttributes = {
+					FFF00001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = GGG00001 /* Build configuration list for PBXProject "Xonora" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EEE00001;
+			packageReferences = (
+				1D861D2D2F110D01007D0C6A /* XCLocalSwiftPackageReference "SendspinKit" */,
+			);
+			productRefGroup = EEE00003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FFF00001 /* Xonora */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		III00001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA00020 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		HHH00001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA00001 /* XonoraApp.swift in Sources */,
+				AAA00002 /* ContentView.swift in Sources */,
+				AAA00003 /* LibraryView.swift in Sources */,
+				AAA00004 /* AlbumDetailView.swift in Sources */,
+				AAA00005 /* NowPlayingView.swift in Sources */,
+				AAA00007 /* AlbumGridItem.swift in Sources */,
+				AAA00008 /* TrackRow.swift in Sources */,
+				AAA00009 /* PlayerControls.swift in Sources */,
+				AAA00010 /* Track.swift in Sources */,
+				AAA00011 /* Album.swift in Sources */,
+				AAA00012 /* Artist.swift in Sources */,
+				AAA00013 /* Player.swift in Sources */,
+				AAA00014 /* XonoraClient.swift in Sources */,
+				AAA00015 /* PlayerManager.swift in Sources */,
+				AAA00016 /* LibraryViewModel.swift in Sources */,
+				AAA00017 /* PlayerViewModel.swift in Sources */,
+				AAA00018 /* SendspinClient.swift in Sources */,
+				AAA00024 /* SceneDelegate.swift in Sources */,
+				AAA00025 /* CarPlaySceneDelegate.swift in Sources */,
+				AAA00026 /* MetadataCache.swift in Sources */,
+				AAA00027 /* ImageCache.swift in Sources */,
+				1D861CD32F0FB2DD007D0C6A /* Color+Xonora.swift in Sources */,
+				AAA00028 /* Playlist.swift in Sources */,
+				AAA00029 /* PlaylistDetailView.swift in Sources */,
+				AAA00030 /* PlaylistGridItem.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		KKK00001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = RH4TEEE3RP;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				                            IPHONEOS_DEPLOYMENT_TARGET = 17.0;				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		KKK00002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = RH4TEEE3RP;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				                            IPHONEOS_DEPLOYMENT_TARGET = 17.0;				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		LLL00001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Xonora/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Xonora;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Xonora needs to connect to your Music Assistant server on your local network.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		LLL00002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Xonora/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Xonora;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Xonora needs to connect to your Music Assistant server on your local network.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		GGG00001 /* Build configuration list for PBXProject "Xonora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				KKK00001 /* Debug */,
+				KKK00002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		GGG00002 /* Build configuration list for PBXNativeTarget "Xonora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				LLL00001 /* Debug */,
+				LLL00002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1D861D2D2F110D01007D0C6A /* XCLocalSwiftPackageReference "SendspinKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SendspinKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1D861D2E2F110D01007D0C6A /* SendspinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SendspinKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = JJJ00001 /* Project object */;
+}
