@@ -129,7 +129,14 @@ public actor WebSocketTransport {
         }
 
         var request = URLRequest(url: url)
-        request.timeoutInterval = 5
+        request.timeoutInterval = 30  // Increased timeout for better reliability
+
+        // Disable HTTP/3 (QUIC) to avoid parsing errors
+        #if os(iOS) || os(macOS)
+        if #available(iOS 15.0, macOS 12.0, *) {
+            request.assumesHTTP3Capable = false
+        }
+        #endif
 
         // Create socket with delegate callbacks on background queue
         // Note: Cannot use DispatchQueue.main in CLI apps without RunLoop

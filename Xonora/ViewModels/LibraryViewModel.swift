@@ -8,6 +8,7 @@ class LibraryViewModel: ObservableObject {
     @Published var albums: [Album] = []
     @Published var artists: [Artist] = []
     @Published var playlists: [Playlist] = []
+    @Published var tracks: [Track] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var searchQuery = ""
@@ -51,12 +52,14 @@ class LibraryViewModel: ObservableObject {
             let cachedAlbums = await cache.getAlbums()
             let cachedArtists = await cache.getArtists()
             let cachedPlaylists = await cache.getPlaylists()
+            let cachedTracks = await cache.getTracks()
 
             if let albums = cachedAlbums, let artists = cachedArtists,
-               let playlists = cachedPlaylists {
+               let playlists = cachedPlaylists, let tracks = cachedTracks {
                 self.albums = albums
                 self.artists = artists
                 self.playlists = playlists
+                self.tracks = tracks
                 print("[LibraryViewModel] Loaded from cache")
             }
         }
@@ -66,30 +69,34 @@ class LibraryViewModel: ObservableObject {
         if albums.isEmpty {
             isLoading = true
         }
-        
+
         errorMessage = nil
 
         do {
             async let albumsTask = client.fetchAlbums()
             async let artistsTask = client.fetchArtists()
             async let playlistsTask = client.fetchPlaylists()
+            async let tracksTask = client.fetchTracks()
 
-            let (fetchedAlbums, fetchedArtists, fetchedPlaylists) = try await (albumsTask, artistsTask, playlistsTask)
+            let (fetchedAlbums, fetchedArtists, fetchedPlaylists, fetchedTracks) = try await (albumsTask, artistsTask, playlistsTask, tracksTask)
 
             let sortedAlbums = fetchedAlbums.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             let sortedArtists = fetchedArtists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             let sortedPlaylists = fetchedPlaylists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            let sortedTracks = fetchedTracks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
             // Update UI with fresh data
             self.albums = sortedAlbums
             self.artists = sortedArtists
             self.playlists = sortedPlaylists
+            self.tracks = sortedTracks
             isLoading = false
 
             // Update Cache
             await cache.setAlbums(sortedAlbums)
             await cache.setArtists(sortedArtists)
             await cache.setPlaylists(sortedPlaylists)
+            await cache.setTracks(sortedTracks)
 
             print("[LibraryViewModel] Fetched and cached library")
         } catch {

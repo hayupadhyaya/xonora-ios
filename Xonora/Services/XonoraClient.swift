@@ -676,7 +676,35 @@ class XonoraClient: NSObject, ObservableObject {
 
         }
 
-    
+        func fetchTracks() async throws -> [Track] {
+            debugLog("Fetching library tracks...")
+
+            let data = try await sendCommand("music/tracks/library_items")
+
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                return []
+            }
+
+            var items: [[String: Any]]?
+
+            if let result = json["result"] as? [String: Any] {
+                items = result["items"] as? [[String: Any]]
+            }
+            else if let result = json["result"] as? [[String: Any]] {
+                items = result
+            }
+
+            guard let trackItems = items else {
+                return []
+            }
+
+            debugLog("Found \(trackItems.count) library tracks")
+            let itemsData = try JSONSerialization.data(withJSONObject: trackItems)
+            let decoder = JSONDecoder()
+            return (try? decoder.decode([Track].self, from: itemsData)) ?? []
+        }
+
+
 
         func fetchAlbumTracks(albumId: String, provider: String) async throws -> [Track] {
 
@@ -835,10 +863,12 @@ class XonoraClient: NSObject, ObservableObject {
 
         }
 
-        func addToLibrary(uri: String) async throws {
-            debugLog("Adding to library: \(uri)")
-            _ = try await sendCommand("music/library/add_items", args: [
-                "uris": [uri]
+        func addToLibrary(itemId: String, provider: String) async throws {
+            debugLog("Adding to library: \(itemId) from \(provider)")
+            // Construct a track URI in the format provider://track/item_id
+            let trackUri = "\(provider)://track/\(itemId)"
+            _ = try await sendCommand("music/library/add_item", args: [
+                "item": trackUri
             ])
         }
 
@@ -1043,10 +1073,26 @@ class XonoraClient: NSObject, ObservableObject {
 
         }
 
+        func setShuffle(enabled: Bool) async throws {
+            guard let playerId = currentPlayer?.playerId else { return }
+            _ = try await sendCommand("player_queues/shuffle", args: [
+                "queue_id": playerId,
+                "shuffle_enabled": enabled
+            ])
+        }
+
+        func setRepeat(mode: String) async throws {
+            guard let playerId = currentPlayer?.playerId else { return }
+            _ = try await sendCommand("player_queues/repeat", args: [
+                "queue_id": playerId,
+                "repeat_mode": mode
+            ])
+        }
+
         func toggleItemFavorite(uri: String, favorite: Bool) async throws {
-            _ = try await sendCommand("music/library/add_items", args: [
-                "uris": [uri],
-                "favorite": favorite
+            let command = favorite ? "music/favorites/add_item" : "music/favorites/remove_item"
+            _ = try await sendCommand(command, args: [
+                "item": uri
             ])
         }
 

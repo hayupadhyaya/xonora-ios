@@ -234,6 +234,19 @@ class PlayerManager: ObservableObject {
 
         print("[PlayerManager] Playing: \(track.name)")
 
+        // Force Shuffle OFF for direct track selection to ensure the selected track plays
+        self.shuffleEnabled = false
+        Task { try? await XonoraClient.shared.setShuffle(enabled: false) }
+
+        // Sync Repeat Mode to ensure server matches client state (fixes stuck repeat issues)
+        let modeString: String
+        switch repeatMode {
+        case .off: modeString = "off"
+        case .all: modeString = "all"
+        case .one: modeString = "one"
+        }
+        Task { try? await XonoraClient.shared.setRepeat(mode: modeString) }
+
         // Set debounce flag to ignore server events temporarily
         isUserInitiatedPlay = true
         userPlayDebounceTask?.cancel()
@@ -352,11 +365,21 @@ class PlayerManager: ObservableObject {
 
     func toggleShuffle() {
         shuffleEnabled.toggle()
+        Task { try? await XonoraClient.shared.setShuffle(enabled: shuffleEnabled) }
     }
 
     func cycleRepeatMode() {
         let nextRaw = (repeatMode.rawValue + 1) % 3
         repeatMode = RepeatMode(rawValue: nextRaw) ?? .off
+        
+        let modeString: String
+        switch repeatMode {
+        case .off: modeString = "off"
+        case .all: modeString = "all"
+        case .one: modeString = "one"
+        }
+        
+        Task { try? await XonoraClient.shared.setRepeat(mode: modeString) }
     }
 
     // MARK: - Queue Management

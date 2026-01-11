@@ -8,6 +8,7 @@ struct LibraryView: View {
 
     enum LibraryCategory: String, CaseIterable {
         case albums = "Albums"
+        case songs = "Songs"
         case playlists = "Playlists"
         case artists = "Artists"
     }
@@ -74,6 +75,8 @@ struct LibraryView: View {
                     switch selectedCategory {
                     case .albums:
                         albumsGrid
+                    case .songs:
+                        songsList
                     case .playlists:
                         playlistsGrid
                     case .artists:
@@ -147,6 +150,7 @@ struct LibraryView: View {
                 .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
             }
         }
+        .scrollContentBackground(.hidden)
     }
 
     private var albumsGrid: some View {
@@ -188,6 +192,59 @@ struct LibraryView: View {
                 .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
             }
         }
+        .scrollContentBackground(.hidden)
+    }
+
+    private var songsList: some View {
+        List {
+            if libraryViewModel.tracks.isEmpty {
+                if #available(iOS 17.0, *) {
+                    ContentUnavailableView(
+                        "No Songs",
+                        systemImage: "music.note",
+                        description: Text("Your library has no songs. Add individual tracks to see them here.")
+                    )
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                } else {
+                    VStack(spacing: 16) {
+                        Image(systemName: "music.note")
+                            .font(.system(size: 60))
+                            .foregroundColor(.secondary)
+                        Text("No Songs")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        Text("Your library has no songs. Add individual tracks to see them here.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+            } else {
+                ForEach(Array(libraryViewModel.tracks.enumerated()), id: \.element.id) { index, track in
+                    TrackRow(
+                        track: track,
+                        index: index + 1,
+                        showArtwork: true,
+                        isPlaying: playerViewModel.currentTrack?.itemId == track.itemId,
+                        numberFirst: true
+                    ) {
+                        Task {
+                            await playerViewModel.playTrack(track)
+                        }
+                    }
+                    .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
     }
 
     private var artistsList: some View {
@@ -200,6 +257,7 @@ struct LibraryView: View {
                         description: Text("Your library is empty.")
                     )
                     .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 } else {
                     VStack(spacing: 16) {
                         Image(systemName: "person.2")
@@ -214,6 +272,7 @@ struct LibraryView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
             } else {
                 ForEach(libraryViewModel.artists) { artist in
@@ -236,10 +295,13 @@ struct LibraryView: View {
                         Spacer()
                     }
                     .padding(.vertical, 4)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
             }
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
         .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
     }
 }

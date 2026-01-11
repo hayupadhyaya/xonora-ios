@@ -7,10 +7,20 @@ actor ImageCache {
 
     private var cache = NSCache<NSString, UIImage>()
     private var downloadingURLs = Set<String>()
+    private let urlSession: URLSession
 
     private init() {
         cache.countLimit = 100 // Max 100 images
         cache.totalCostLimit = 50 * 1024 * 1024 // 50MB max
+
+        // Reuse single URLSession to avoid reporter disconnection errors
+        let config = URLSessionConfiguration.ephemeral
+        config.connectionProxyDictionary = [:]
+        config.urlCache = nil
+        config.httpMaximumConnectionsPerHost = 4
+        config.timeoutIntervalForRequest = 30
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        self.urlSession = URLSession(configuration: config)
     }
 
     func image(for url: URL) -> UIImage? {
@@ -38,6 +48,10 @@ actor ImageCache {
 
     func clearCache() {
         cache.removeAllObjects()
+    }
+
+    var session: URLSession {
+        urlSession
     }
 }
 
@@ -94,7 +108,9 @@ struct CachedAsyncImage<Placeholder: View>: View {
             await ImageCache.shared.startDownloading(url)
 
             do {
-                let (data, _) = try await URLSession.shared.data(from: url)
+                // Use shared URLSession to avoid creating multiple sessions
+                let session = await ImageCache.shared.session
+                let (data, _) = try await session.data(from: url)
                 if let downloadedImage = UIImage(data: data) {
                     await ImageCache.shared.setImage(downloadedImage, for: url)
                     await MainActor.run {

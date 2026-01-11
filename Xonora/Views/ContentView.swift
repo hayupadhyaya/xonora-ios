@@ -443,6 +443,7 @@ struct SearchView: View {
                     ForEach(libraryViewModel.searchResults.tracks) { track in
                         TrackRow(
                             track: track,
+                            showArtwork: true,
                             isPlaying: playerViewModel.playerManager.currentTrack?.id == track.id,
                             onTap: {
                                 playerViewModel.playTrack(track, fromQueue: libraryViewModel.searchResults.tracks)
@@ -630,7 +631,7 @@ struct SettingsView: View {
                     HStack {
                         Label("App Version", systemImage: "info.circle")
                         Spacer()
-                        Text("1.0.0")
+                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0")
                             .foregroundColor(.secondary)
                     }
                 } header: {

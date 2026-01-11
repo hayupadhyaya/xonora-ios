@@ -4,21 +4,64 @@ struct TrackRow: View {
     @EnvironmentObject var libraryViewModel: LibraryViewModel
     let track: Track
     let index: Int?
+    let showArtwork: Bool
     let isPlaying: Bool
+    let numberFirst: Bool
     let onTap: () -> Void
 
-    init(track: Track, index: Int? = nil, isPlaying: Bool = false, onTap: @escaping () -> Void) {
+    init(track: Track, index: Int? = nil, showArtwork: Bool = false, isPlaying: Bool = false, numberFirst: Bool = false, onTap: @escaping () -> Void) {
         self.track = track
         self.index = index
+        self.showArtwork = showArtwork
         self.isPlaying = isPlaying
+        self.numberFirst = numberFirst
         self.onTap = onTap
     }
 
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                // Track number or playing indicator
-                if let index = index {
+                // Track number or playing indicator (before artwork if numberFirst is true)
+                if numberFirst, let index = index {
+                    if isPlaying {
+                        if #available(iOS 17.0, *) {
+                            Image(systemName: "waveform")
+                                .font(.caption)
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                                .symbolEffect(.variableColor.iterative)
+                        } else {
+                            // Fallback on earlier versions
+                            Image(systemName: "waveform")
+                                .font(.caption)
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                        }
+                    } else {
+                        Text("\(index)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .frame(width: 24)
+                    }
+                }
+
+                // Artwork
+                if showArtwork {
+                    CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: track.imageUrl ?? track.album?.imageUrl, size: .thumbnail)) {
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay {
+                                Image(systemName: "music.note")
+                                    .foregroundColor(.gray)
+                            }
+                    }
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+
+                // Track number or playing indicator (after artwork if numberFirst is false)
+                if !numberFirst, let index = index {
                     if isPlaying {
                         if #available(iOS 17.0, *) {
                             Image(systemName: "waveform")
@@ -110,7 +153,7 @@ struct TrackRow: View {
                     if track.provider != "library" {
                         Button {
                             Task {
-                                try? await XonoraClient.shared.addToLibrary(uri: track.uri)
+                                try? await XonoraClient.shared.addToLibrary(itemId: track.itemId, provider: track.provider)
                             }
                         } label: {
                             Label("Add to Library", systemImage: "plus.circle")

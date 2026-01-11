@@ -1,6 +1,0 @@
-# SwiftFormat Configuration
-# Disable trailing commas to comply with SwiftLint
---trailingcommas never
-
-# Disable wrapMultilineStatementBraces to match SwiftLint opening_brace rule
---disable wrapMultilineStatementBraces

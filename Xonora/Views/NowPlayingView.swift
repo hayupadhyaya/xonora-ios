@@ -59,6 +59,7 @@ struct NowPlayingView: View {
         .sheet(isPresented: $showQueue) {
             QueueView()
         }
+        .preferredColorScheme(.dark)
     }
 
     private var backgroundView: some View {

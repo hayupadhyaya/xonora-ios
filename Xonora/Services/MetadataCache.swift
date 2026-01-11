@@ -13,6 +13,7 @@ actor MetadataCache {
     private var albumsCache: [Album]?
     private var artistsCache: [Artist]?
     private var playlistsCache: [Playlist]?
+    private var tracksCache: [Track]?
     private var albumTracksCache: [String: [Track]] = [:] // albumId -> tracks
     private var playlistTracksCache: [String: [Track]] = [:] // playlistId -> tracks
 
@@ -20,6 +21,7 @@ actor MetadataCache {
     private var albumsCacheTime: Date?
     private var artistsCacheTime: Date?
     private var playlistsCacheTime: Date?
+    private var tracksCacheTime: Date?
 
     // Cache expiry (1 hour for library data)
     private let cacheExpiry: TimeInterval = 3600
@@ -88,6 +90,23 @@ actor MetadataCache {
         Task { await saveToDisk(playlists, filename: "playlists.json") }
     }
 
+    // MARK: - Tracks
+
+    func getTracks() -> [Track]? {
+        guard let cache = tracksCache,
+              let cacheTime = tracksCacheTime,
+              Date().timeIntervalSince(cacheTime) < cacheExpiry else {
+            return nil
+        }
+        return cache
+    }
+
+    func setTracks(_ tracks: [Track]) {
+        tracksCache = tracks
+        tracksCacheTime = Date()
+        Task { await saveToDisk(tracks, filename: "tracks.json") }
+    }
+
     // MARK: - Album Tracks
 
     func getAlbumTracks(albumId: String) -> [Track]? {
@@ -116,11 +135,13 @@ actor MetadataCache {
         albumsCache = nil
         artistsCache = nil
         playlistsCache = nil
+        tracksCache = nil
         albumTracksCache.removeAll()
         playlistTracksCache.removeAll()
         albumsCacheTime = nil
         artistsCacheTime = nil
         playlistsCacheTime = nil
+        tracksCacheTime = nil
 
         // Clear disk cache
         try? fileManager.removeItem(at: cacheDirectory)
@@ -132,6 +153,7 @@ actor MetadataCache {
         albumsCacheTime = nil
         artistsCacheTime = nil
         playlistsCacheTime = nil
+        tracksCacheTime = nil
     }
 
     // MARK: - Disk Persistence
@@ -174,6 +196,11 @@ actor MetadataCache {
         if let playlists: [Playlist] = loadFromDisk([Playlist].self, filename: "playlists.json") {
             playlistsCache = playlists
             playlistsCacheTime = Date()
+        }
+
+        if let tracks: [Track] = loadFromDisk([Track].self, filename: "tracks.json") {
+            tracksCache = tracks
+            tracksCacheTime = Date()
         }
 
         print("[MetadataCache] Loaded caches from disk")
