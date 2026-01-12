@@ -2,6 +2,11 @@
 
 Xonora is a high-performance, native iOS client for Music Assistant. Built with SwiftUI and the custom **SendspinKit** audio engine, it delivers gapless, synchronized, and high-fidelity playback from your self-hosted server directly to your iOS device.
 
+## Beta Testing
+
+Xonora is currently in open alpha. You can join the public TestFlight to help test the app on your device:
+**[Join the Xonora TestFlight](https://testflight.apple.com/join/5rUk1uqN)**
+
 ## Screenshots
 
 <p align="center">
@@ -82,10 +87,12 @@ This release introduces significant architectural improvements to the audio subs
 
 ## Installation
 
-1. Clone the repository.
-2. Open `Xonora.xcodeproj` in Xcode 15+.
-3. Configure your signing team in project settings.
-4. Build and run on a physical device (Sendspin audio streaming requires a real network interface).
+1. **TestFlight (Recommended):** Join the [Public Beta](https://testflight.apple.com/join/5rUk1uqN) to install via the TestFlight app.
+2. **Manual Build:**
+   - Clone the repository.
+   - Open `Xonora.xcodeproj` in Xcode 15+.
+   - Configure your signing team in project settings.
+   - Build and run on a physical device (Sendspin audio streaming requires a real network interface).
 
 ## Configuration
 
