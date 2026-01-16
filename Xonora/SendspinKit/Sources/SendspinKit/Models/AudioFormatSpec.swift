@@ -12,6 +12,13 @@ public struct AudioFormatSpec: Codable, Sendable, Hashable {
     /// Bit depth (16, 24, or 32)
     public let bitDepth: Int
 
+    enum CodingKeys: String, CodingKey {
+        case codec
+        case channels
+        case sampleRate = "sample_rate"
+        case bitDepth = "bit_depth"
+    }
+
     public init(codec: AudioCodec, channels: Int, sampleRate: Int, bitDepth: Int) {
         precondition(channels > 0 && channels <= 32, "Channels must be between 1 and 32")
         precondition(sampleRate > 0 && sampleRate <= 384_000, "Sample rate must be between 1 and 384000 Hz")

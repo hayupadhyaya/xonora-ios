@@ -333,8 +333,8 @@ public final class SendspinClient {
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(1))
                 if connectionState == .connecting {
-                    print("[SendspinKit] ⚠️ Server did not send server/hello")
-                    print("[SendspinKit] Treating connection as established (Music Assistant compatibility mode)")
+                    // print("[SendspinKit] ⚠️ Server did not send server/hello")
+                    // print("[SendspinKit] Treating connection as established (Music Assistant compatibility mode)")
                     connectionState = .connected
                     let info = ServerInfo(
                         serverId: "music-assistant",
@@ -363,7 +363,7 @@ public final class SendspinClient {
                let payload = json["payload"] as? [String: Any],
                let player = payload["player"] as? [String: Any],
                let command = player["command"] as? String {
-                print("[SendspinKit] Received server command: \(command)")
+                // print("[SendspinKit] Received server command: \(command)")
 
                 if command == "volume", let volume = player["volume"] as? Int {
                     // print("[SendspinKit] Setting volume to \(volume)")
@@ -641,6 +641,12 @@ public final class SendspinClient {
     public func resumePlayback() async {
         audioPlayer?.resume()
         try? await sendClientState()
+    }
+    
+    /// Get current audio playback time in seconds
+    @MainActor
+    public func getPlaybackTime() -> TimeInterval {
+        return audioPlayer?.getCurrentTime() ?? 0
     }
 }
 

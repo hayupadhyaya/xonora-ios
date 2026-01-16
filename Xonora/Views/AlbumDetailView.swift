@@ -86,7 +86,7 @@ struct AlbumDetailView: View {
                     trackList
                 }
             }
-            .padding(.bottom, playerViewModel.hasTrack ? 100 : 20)
+            .padding(.bottom, playerViewModel.hasTrack ? 160 : 100)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -101,6 +101,7 @@ struct AlbumDetailView: View {
                 }
             }
         }
+        .background(Color(UIColor.systemBackground).ignoresSafeArea())
         .task {
             await loadTracks()
         }

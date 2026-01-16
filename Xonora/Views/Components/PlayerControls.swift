@@ -1,7 +1,11 @@
 import SwiftUI
+import MediaPlayer
 
 struct PlayerControls: View {
     @ObservedObject var playerManager: PlayerManager
+    @ObservedObject private var xonoraClient = XonoraClient.shared
+    @ObservedObject private var sendspinClient = SendspinClient.shared
+    
     let size: ControlSize
 
     enum ControlSize {
@@ -16,6 +20,15 @@ struct PlayerControls: View {
         case .full:
             fullControls
         }
+    }
+    
+    private var isLocalPlayer: Bool {
+        // If we are playing on this device (Sendspin), show system volume slider
+        guard let currentId = xonoraClient.currentPlayer?.playerId,
+              let localId = sendspinClient.clientId else {
+            return false
+        }
+        return currentId == localId
     }
 
     private var compactControls: some View {
@@ -112,24 +125,52 @@ struct PlayerControls: View {
                 }
             }
 
-            // Volume slider
-            HStack(spacing: 12) {
-                Image(systemName: "speaker.fill")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            // Volume slider and destination
+            VStack(spacing: 16) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "speaker.fill")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
 
-                Slider(
-                    value: Binding(
-                        get: { Double(playerManager.volume) },
-                        set: { playerManager.setVolume(Float($0)) }
-                    ),
-                    in: 0...1
-                )
-                .tint(.secondary)
+                    if isLocalPlayer {
+                        VolumeView()
+                            .frame(height: 30) // Match standard slider height
+                    } else {
+                        Slider(
+                            value: Binding(
+                                get: { Double(playerManager.volume) },
+                                set: { playerManager.setVolume(Float($0)) }
+                            ),
+                            in: 0...1
+                        )
+                        .tint(.secondary)
+                    }
 
-                Image(systemName: "speaker.wave.3.fill")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    Image(systemName: "speaker.wave.3.fill")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                // Playback Destination
+                if let playerName = xonoraClient.currentPlayer?.name {
+                    Button {
+                        // TODO: Show player picker?
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: isLocalPlayer ? "iphone" : "speaker.wave.2.fill")
+                                .font(.caption)
+                            Text(playerName)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                        }
+                        .foregroundColor(.accentColor)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.accentColor.opacity(0.15))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
             }
         }
     }
@@ -206,6 +247,17 @@ struct ProgressSlider: View {
     private func thumbOffset(in totalWidth: CGFloat) -> CGFloat {
         progressWidth(in: totalWidth) - 6
     }
+}
+
+struct VolumeView: UIViewRepresentable {
+    func makeUIView(context: Context) -> MPVolumeView {
+        let volumeView = MPVolumeView()
+        volumeView.showsVolumeSlider = true
+        // Tinting is handled by system appearance mostly, but we can try to style if needed
+        return volumeView
+    }
+
+    func updateUIView(_ uiView: MPVolumeView, context: Context) {}
 }
 
 struct PlayerControls_Previews: PreviewProvider {

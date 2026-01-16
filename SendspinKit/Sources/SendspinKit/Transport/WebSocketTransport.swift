@@ -35,8 +35,10 @@ public actor WebSocketTransport: NSObject, URLSessionWebSocketDelegate {
         // Configure URLSession with proxy bypass
         let config = URLSessionConfiguration.default
         config.connectionProxyDictionary = [:]
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 5 // Connection timeout
+        // Set request timeout to 24 hours to prevent "Operation timed out" logs.
+        // We use application-level heartbeat/ping if needed.
+        config.timeoutIntervalForRequest = 86400
+        config.timeoutIntervalForResource = 604800 // 7 days (Persistent connection)
         config.waitsForConnectivity = true
         
         self.urlSession = URLSession(configuration: config, delegate: self, delegateQueue: OperationQueue())

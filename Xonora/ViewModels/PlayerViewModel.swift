@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SendspinKit
 
 @MainActor
 class PlayerViewModel: ObservableObject {
@@ -15,11 +16,16 @@ class PlayerViewModel: ObservableObject {
     @Published var playbackError: String?
     @Published var sendspinEnabled: Bool = false
     @Published var sendspinConnected: Bool = false
+    @Published var currentTrack: Track?
+    @Published var currentSource: String?
+    @Published var discoveredServers: [DiscoveredServer] = []
 
     private let client = XonoraClient.shared
     private let sendspinClient = SendspinClient.shared
+    private let discovery = ServerDiscovery()
     let playerManager = PlayerManager.shared
     private var cancellables = Set<AnyCancellable>()
+    private var discoveryTask: Task<Void, Never>?
 
     private let serverURLKey = "MusicAssistantServerURL"
     private let accessTokenKey = "MusicAssistantAccessToken"
@@ -80,6 +86,35 @@ class PlayerViewModel: ObservableObject {
         sendspinClient.$isConnected
             .receive(on: DispatchQueue.main)
             .assign(to: &$sendspinConnected)
+            
+        // Sync current track
+        playerManager.$currentTrack
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$currentTrack)
+            
+        // Sync current source
+        playerManager.$currentSource
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$currentSource)
+    }
+
+    func startDiscovery() {
+        discoveryTask?.cancel()
+        discoveryTask = Task {
+            await discovery.startDiscovery()
+            for await servers in await discovery.servers {
+                self.discoveredServers = servers
+            }
+        }
+    }
+
+    func stopDiscovery() {
+        discoveryTask?.cancel()
+        discoveryTask = nil
+        Task {
+            await discovery.stopDiscovery()
+            self.discoveredServers = []
+        }
     }
 
     private func loadSavedCredentials() {
@@ -89,7 +124,14 @@ class PlayerViewModel: ObservableObject {
         if let savedToken = UserDefaults.standard.string(forKey: accessTokenKey) {
             accessToken = savedToken
         }
-        sendspinEnabled = UserDefaults.standard.bool(forKey: sendspinEnabledKey)
+        
+        // If Sendspin enabled state hasn't been set yet, default to true
+        if UserDefaults.standard.object(forKey: sendspinEnabledKey) == nil {
+            sendspinEnabled = true
+            UserDefaults.standard.set(true, forKey: sendspinEnabledKey)
+        } else {
+            sendspinEnabled = UserDefaults.standard.bool(forKey: sendspinEnabledKey)
+        }
     }
 
     func connectToServer() {
@@ -183,8 +225,8 @@ class PlayerViewModel: ObservableObject {
 
     // MARK: - Playback Control
 
-    func playTrack(_ track: Track, fromQueue tracks: [Track]? = nil) {
-        playerManager.playTrack(track, fromQueue: tracks)
+    func playTrack(_ track: Track, fromQueue tracks: [Track]? = nil, sourceName: String? = nil) {
+        playerManager.playTrack(track, fromQueue: tracks, sourceName: sourceName)
     }
 
     func playAlbum(_ tracks: [Track], startingAt index: Int = 0) {
@@ -216,10 +258,6 @@ class PlayerViewModel: ObservableObject {
     }
 
     // MARK: - Helper Properties
-
-    var currentTrack: Track? {
-        playerManager.currentTrack
-    }
 
     var isPlaying: Bool {
         playerManager.isPlaying

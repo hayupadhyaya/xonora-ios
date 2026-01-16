@@ -5,12 +5,24 @@ struct LibraryView: View {
     @EnvironmentObject var playerViewModel: PlayerViewModel
 
     @State private var selectedCategory: LibraryCategory = .albums
+    @State private var isInitialLoad = true
 
-    enum LibraryCategory: String, CaseIterable {
+    enum LibraryCategory: String, CaseIterable, Identifiable {
         case albums = "Albums"
         case songs = "Songs"
         case playlists = "Playlists"
         case artists = "Artists"
+
+        var id: String { self.rawValue }
+
+        var icon: String {
+            switch self {
+            case .albums: return "square.stack.fill"
+            case .songs: return "music.note"
+            case .playlists: return "music.note.list"
+            case .artists: return "person.2.fill"
+            }
+        }
     }
 
     private let columns = [
@@ -20,90 +32,50 @@ struct LibraryView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Category picker
-                Picker("Category", selection: $selectedCategory) {
-                    ForEach(LibraryCategory.allCases, id: \.self) { category in
-                        Text(category.rawValue).tag(category)
+            ZStack {
+                if (libraryViewModel.isLoading || isInitialLoad) && libraryViewModel.albums.isEmpty {
+                    VStack {
+                        Spacer()
+                        ProgressView("Loading Library...")
+                            .controlSize(.large)
+                        Spacer()
                     }
-                }
-                .pickerStyle(.segmented)
-                .padding()
-
-                // Content
-                if libraryViewModel.isLoading {
-                    Spacer()
-                    ProgressView("Loading Library...")
-                    Spacer()
-                } else if let error = libraryViewModel.errorMessage {
-                    Spacer()
-                    if #available(iOS 17.0, *) {
-                        ContentUnavailableView {
-                            Label("Unable to Load", systemImage: "exclamationmark.triangle")
-                        } description: {
-                            Text(error)
-                        } actions: {
-                            Button("Try Again") {
-                                Task {
-                                    await libraryViewModel.loadLibrary()
-                                }
+                    .frame(maxWidth: .infinity)
+                } else if let error = libraryViewModel.errorMessage, libraryViewModel.albums.isEmpty {
+                    ContentUnavailableView {
+                        Label("Unable to Load", systemImage: "exclamationmark.triangle")
+                    } description: {
+                        Text(error)
+                    } actions: {
+                        Button("Try Again") {
+                            Task {
+                                await libraryViewModel.loadLibrary()
                             }
                         }
-                    } else {
-                        VStack(spacing: 16) {
-                            Image(systemName: "exclamationmark.triangle")
-                                .font(.system(size: 60))
-                                .foregroundColor(.secondary)
-                            Text("Unable to Load")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                            Text(error)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                            Button("Try Again") {
-                                Task {
-                                    await libraryViewModel.loadLibrary()
-                                }
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                        .padding()
                     }
-                    Spacer()
                 } else {
-                    switch selectedCategory {
-                    case .albums:
-                        albumsGrid
-                    case .songs:
-                        songsList
-                    case .playlists:
-                        playlistsGrid
-                    case .artists:
-                        artistsList
+                    TabView(selection: $selectedCategory) {
+                        categoryScrollView { albumsGrid }.tag(LibraryCategory.albums)
+                        categoryScrollView { songsList }.tag(LibraryCategory.songs)
+                        categoryScrollView { playlistsGrid }.tag(LibraryCategory.playlists)
+                        categoryScrollView { artistsList }.tag(LibraryCategory.artists)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .safeAreaInset(edge: .top, spacing: 0) {
+                        categoryTabBar
                     }
                 }
             }
-            .navigationTitle("Library")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        Task {
-                            await libraryViewModel.loadLibrary()
-                        }
-                    } label: {
-                        Image(systemName: "arrow.clockwise")
-                    }
-                }
-            }
+            .navigationBarHidden(true)
+            .background(Color(UIColor.systemGroupedBackground))
         }
         .task {
-            if libraryViewModel.albums.isEmpty && playerViewModel.isConnected {
-                await libraryViewModel.loadLibrary()
-            }
+            // Initial load attempt (loads from cache even if disconnected)
+            await libraryViewModel.loadLibrary()
+            isInitialLoad = false
         }
-        .onChange(of: playerViewModel.isConnected) { connected in
-            if connected && libraryViewModel.albums.isEmpty {
+        .onChange(of: playerViewModel.isConnected) { oldValue, connected in
+            if connected {
                 Task {
                     await libraryViewModel.loadLibrary()
                 }
@@ -111,32 +83,60 @@ struct LibraryView: View {
         }
     }
 
-    private var playlistsGrid: some View {
-        ScrollView {
-            if libraryViewModel.playlists.isEmpty {
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView(
-                        "No Playlists",
-                        systemImage: "music.note.list",
-                        description: Text("Your library has no playlists.")
-                    )
-                    .padding(.top, 100)
-                } else {
-                    VStack(spacing: 16) {
-                        Image(systemName: "music.note.list")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No Playlists")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Your library has no playlists.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
+    private var categoryTabBar: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                ForEach(LibraryCategory.allCases) { category in
+                    Button {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                            selectedCategory = category
+                        }
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: category.icon)
+                                .font(.system(size: 20))
+                                .symbolVariant(selectedCategory == category ? .fill : .none)
+                            
+                            Text(category.rawValue)
+                                .font(.system(size: 10))
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .contentShape(Rectangle())
+                        .foregroundColor(selectedCategory == category ? .accentColor : .secondary)
                     }
-                    .padding()
-                    .padding(.top, 100)
+                    .buttonStyle(.plain)
                 }
+            }
+            .padding(.horizontal, 4)
+            .padding(.top, 4)
+            
+            Divider().background(Color.primary.opacity(0.1))
+        }
+        .background(.ultraThinMaterial)
+    }
+
+    @ViewBuilder
+    private func categoryScrollView<Content: View>(@ViewBuilder content: @escaping () -> Content) -> some View {
+        ScrollView {
+            content()
+                .padding(.top, 16)
+        }
+        .refreshable {
+            await libraryViewModel.loadLibrary(forceRefresh: true)
+        }
+    }
+
+    private var playlistsGrid: some View {
+        LazyVStack(spacing: 0) {
+            if libraryViewModel.playlists.isEmpty && !libraryViewModel.isLoading {
+                ContentUnavailableView(
+                    "No Playlists",
+                    systemImage: "music.note.list",
+                    description: Text("Your library has no playlists.")
+                )
+                .padding(.top, 100)
             } else {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(libraryViewModel.playlists) { playlist in
@@ -146,39 +146,21 @@ struct LibraryView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding()
-                .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
+                .padding(.horizontal)
+                .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 
     private var albumsGrid: some View {
-        ScrollView {
-            if libraryViewModel.albums.isEmpty {
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView(
-                        "No Albums",
-                        systemImage: "square.stack",
-                        description: Text("Your library is empty. Add some music to get started.")
-                    )
-                    .padding(.top, 100)
-                } else {
-                    VStack(spacing: 16) {
-                        Image(systemName: "square.stack")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No Albums")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Your library is empty. Add some music to get started.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
-                    .padding(.top, 100)
-                }
+        LazyVStack(spacing: 0) {
+            if libraryViewModel.albums.isEmpty && !libraryViewModel.isLoading {
+                ContentUnavailableView(
+                    "No Albums",
+                    systemImage: "square.stack",
+                    description: Text("Your library is empty. Add some music to get started.")
+                )
+                .padding(.top, 100)
             } else {
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(libraryViewModel.albums) { album in
@@ -188,41 +170,21 @@ struct LibraryView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding()
-                .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
+                .padding(.horizontal)
+                .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 
     private var songsList: some View {
-        List {
-            if libraryViewModel.tracks.isEmpty {
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView(
-                        "No Songs",
-                        systemImage: "music.note",
-                        description: Text("Your library has no songs. Add individual tracks to see them here.")
-                    )
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                } else {
-                    VStack(spacing: 16) {
-                        Image(systemName: "music.note")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No Songs")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Your library has no songs. Add individual tracks to see them here.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
+        LazyVStack(spacing: 0) {
+            if libraryViewModel.tracks.isEmpty && !libraryViewModel.isLoading {
+                ContentUnavailableView(
+                    "No Songs",
+                    systemImage: "music.note",
+                    description: Text("Your library has no songs. Add individual tracks to see them here.")
+                )
+                .padding(.top, 100)
             } else {
                 ForEach(Array(libraryViewModel.tracks.enumerated()), id: \.element.id) { index, track in
                     TrackRow(
@@ -232,77 +194,62 @@ struct LibraryView: View {
                         isPlaying: playerViewModel.currentTrack?.itemId == track.itemId,
                         numberFirst: true
                     ) {
-                        Task {
-                            await playerViewModel.playTrack(track)
-                        }
+                        playerViewModel.playTrack(track, sourceName: "Songs")
                     }
-                    .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+                    .padding(.horizontal, 12)
                 }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
+        .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
     }
 
     private var artistsList: some View {
-        List {
-            if libraryViewModel.artists.isEmpty {
-                if #available(iOS 17.0, *) {
-                    ContentUnavailableView(
-                        "No Artists",
-                        systemImage: "person.2",
-                        description: Text("Your library is empty.")
-                    )
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                } else {
-                    VStack(spacing: 16) {
-                        Image(systemName: "person.2")
-                            .font(.system(size: 60))
-                            .foregroundColor(.secondary)
-                        Text("No Artists")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                        Text("Your library is empty.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
+        LazyVStack(spacing: 0) {
+            if libraryViewModel.artists.isEmpty && !libraryViewModel.isLoading {
+                ContentUnavailableView(
+                    "No Artists",
+                    systemImage: "person.2",
+                    description: Text("Your library is empty.")
+                )
+                .padding(.top, 100)
             } else {
                 ForEach(libraryViewModel.artists) { artist in
-                    HStack(spacing: 12) {
-                        CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: artist.imageUrl, size: .thumbnail)) {
-                            Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .overlay {
-                                    Image(systemName: "person.fill")
-                                        .foregroundColor(.gray)
-                                }
+                    NavigationLink(destination: ArtistDetailView(artist: artist)) {
+                        HStack(spacing: 12) {
+                            CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: artist.imageUrl, size: .thumbnail)) {
+                                Circle()
+                                    .fill(Color.gray.opacity(0.3))
+                                    .overlay {
+                                        Image(systemName: "person.fill")
+                                            .foregroundColor(.gray)
+                                    }
+                            }
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 44, height: 44) // Match TrackRow artwork size
+                            .clipShape(Circle())
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(artist.name)
+                                    .font(.body)
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                            }
+
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundColor(.secondary.opacity(0.5))
                         }
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 50)
-                        .clipShape(Circle())
-
-                        Text(artist.name)
-                            .font(.body)
-
-                        Spacer()
+                        .padding(.vertical, 8) // Match TrackRow vertical padding
+                        .padding(.horizontal, 12)
+                        .contentShape(Rectangle())
                     }
-                    .padding(.vertical, 4)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+                    .buttonStyle(.plain)
                 }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .padding(.bottom, playerViewModel.hasTrack ? 80 : 0)
+        .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
     }
 }
 

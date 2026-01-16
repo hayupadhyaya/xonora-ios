@@ -34,6 +34,7 @@
 		AAA00028 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00028 /* Playlist.swift */; };
 		AAA00029 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00029 /* PlaylistDetailView.swift */; };
 		AAA00030 /* PlaylistGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00030 /* PlaylistGridItem.swift */; };
+		AAA00032 /* ArtistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00032 /* ArtistDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -129,6 +130,7 @@
 		BBB00028 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		BBB00029 /* PlaylistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailView.swift; sourceTree = "<group>"; };
 		BBB00030 /* PlaylistGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistGridItem.swift; sourceTree = "<group>"; };
+		BBB00032 /* ArtistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailView.swift; sourceTree = "<group>"; };
 		BBB00031 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		CCC00001 /* Xonora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Xonora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -467,6 +469,7 @@
 				BBB00003 /* LibraryView.swift */,
 				BBB00004 /* AlbumDetailView.swift */,
 				BBB00005 /* NowPlayingView.swift */,
+				BBB00032 /* ArtistDetailView.swift */,
 				BBB00029 /* PlaylistDetailView.swift */,
 				EEE00007 /* Components */,
 			);
@@ -590,6 +593,7 @@
 				AAA00028 /* Playlist.swift in Sources */,
 				AAA00029 /* PlaylistDetailView.swift in Sources */,
 				AAA00030 /* PlaylistGridItem.swift in Sources */,
+				AAA00032 /* ArtistDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,7 +742,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -769,7 +773,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
 				PROVISIONING_PROFILE_SPECIFIER = "Xonora AppConnect";
 				PRODUCT_NAME = "$(TARGET_NAME)";

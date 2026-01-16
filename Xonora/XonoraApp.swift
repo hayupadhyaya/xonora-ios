@@ -8,7 +8,17 @@ struct XonoraApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        configureAudioSession()
+        // Configure tab bar to be transparent and floating
+        let appearance = UITabBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.85)
+
+        // Add blur effect
+        let blurEffect = UIBlurEffect(style: .systemMaterial)
+        appearance.backgroundEffect = blurEffect
+
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
     }
 
     var body: some Scene {
@@ -16,9 +26,22 @@ struct XonoraApp: App {
             ContentView()
                 .environmentObject(playerViewModel)
                 .environmentObject(libraryViewModel)
+                .onAppear {
+                    // Configure audio session asynchronously to avoid blocking startup
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        self.configureAudioSession()
+                    }
+                }
         }
         .onChange(of: scenePhase) { newPhase in
-            if newPhase == .background {
+            if newPhase == .active {
+                print("[XonoraApp] App became active, refreshing state...")
+                if playerViewModel.isConnected {
+                    Task {
+                        await XonoraClient.shared.fetchPlayers()
+                    }
+                }
+            } else if newPhase == .background {
                 // Dismiss keyboard when going to background to prevent snapshotting errors
                 UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             }

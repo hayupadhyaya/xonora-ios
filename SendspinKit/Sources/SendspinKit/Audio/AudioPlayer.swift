@@ -275,6 +275,17 @@ public final class AudioPlayer: @unchecked Sendable {
             self.playerNode?.play()
         }
     }
+    
+    public func getCurrentTime() -> TimeInterval {
+        audioThread.sync {
+            guard let node = playerNode,
+                  let lastRenderTime = node.lastRenderTime,
+                  let playerTime = node.playerTime(forNodeTime: lastRenderTime) else {
+                return 0
+            }
+            return Double(playerTime.sampleTime) / playerTime.sampleRate
+        }
+    }
 
     // MARK: - Scheduling
 

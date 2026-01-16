@@ -101,6 +101,7 @@ struct PlaylistDetailView: View {
                 }
             }
         }
+        .background(Color(UIColor.systemBackground).ignoresSafeArea())
         .task {
             await loadTracks()
         }

@@ -110,20 +110,34 @@ struct CachedAsyncImage<Placeholder: View>: View {
             do {
                 // Use shared URLSession to avoid creating multiple sessions
                 let session = await ImageCache.shared.session
-                let (data, _) = try await session.data(from: url)
+                let (data, response) = try await session.data(from: url)
+                
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                    safeLog("[ImageCache] Error loading image from \(url.absoluteString): HTTP \(httpResponse.statusCode)")
+                }
+
                 if let downloadedImage = UIImage(data: data) {
                     await ImageCache.shared.setImage(downloadedImage, for: url)
                     await MainActor.run {
                         self.image = downloadedImage
                     }
+                } else {
+                    safeLog("[ImageCache] Failed to decode image data from \(url.absoluteString)")
                 }
             } catch {
-                // Silent failure - placeholder remains visible
+                safeLog("[ImageCache] Exception loading image from \(url.absoluteString): \(error.localizedDescription)")
             }
 
             await ImageCache.shared.finishDownloading(url)
             await MainActor.run { isLoading = false }
         }
+    }
+
+    private func safeLog(_ message: String) {
+        // Truncate extremely long messages to avoid system logging issues (decode: bad range)
+        // especially important for base64 data: URLs
+        let logMessage = message.count > 1000 ? String(message.prefix(1000)) + "... (truncated)" : message
+        print(logMessage)
     }
 }
 

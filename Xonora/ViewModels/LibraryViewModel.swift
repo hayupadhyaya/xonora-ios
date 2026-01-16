@@ -14,6 +14,7 @@ class LibraryViewModel: ObservableObject {
     @Published var searchQuery = ""
     @Published var searchResults: (albums: [Album], artists: [Artist], tracks: [Track]) = ([], [], [])
     @Published var isSearching = false
+    private var isNetworkFetching = false
 
     private let client = XonoraClient.shared
     private let cache = MetadataCache.shared
@@ -65,6 +66,9 @@ class LibraryViewModel: ObservableObject {
         }
 
         // 2. Fetch from server
+        guard !isNetworkFetching else { return }
+        isNetworkFetching = true
+        
         // Only show fullscreen loader if we have no data
         if albums.isEmpty {
             isLoading = true
@@ -80,23 +84,31 @@ class LibraryViewModel: ObservableObject {
 
             let (fetchedAlbums, fetchedArtists, fetchedPlaylists, fetchedTracks) = try await (albumsTask, artistsTask, playlistsTask, tracksTask)
 
-            let sortedAlbums = fetchedAlbums.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            let sortedArtists = fetchedArtists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            let sortedPlaylists = fetchedPlaylists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-            let sortedTracks = fetchedTracks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            // Perform heavy sorting and caching off the main thread
+            let (sortedAlbums, sortedArtists, sortedPlaylists, sortedTracks) = await Task.detached(priority: .userInitiated) {
+                let sortedAlbums = fetchedAlbums.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                let sortedArtists = fetchedArtists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                let sortedPlaylists = fetchedPlaylists.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                let sortedTracks = fetchedTracks.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+                
+                return (sortedAlbums, sortedArtists, sortedPlaylists, sortedTracks)
+            }.value
 
-            // Update UI with fresh data
+            // Update UI with fresh data on MainActor
             self.albums = sortedAlbums
             self.artists = sortedArtists
             self.playlists = sortedPlaylists
             self.tracks = sortedTracks
             isLoading = false
+            isNetworkFetching = false
 
-            // Update Cache
-            await cache.setAlbums(sortedAlbums)
-            await cache.setArtists(sortedArtists)
-            await cache.setPlaylists(sortedPlaylists)
-            await cache.setTracks(sortedTracks)
+            // Update Cache in background
+            Task.detached(priority: .utility) {
+                await self.cache.setAlbums(sortedAlbums)
+                await self.cache.setArtists(sortedArtists)
+                await self.cache.setPlaylists(sortedPlaylists)
+                await self.cache.setTracks(sortedTracks)
+            }
 
             print("[LibraryViewModel] Fetched and cached library")
         } catch {
@@ -105,6 +117,7 @@ class LibraryViewModel: ObservableObject {
                 errorMessage = error.localizedDescription
             }
             isLoading = false
+            isNetworkFetching = false
         }
     }
 
@@ -192,6 +205,27 @@ class LibraryViewModel: ObservableObject {
         await cache.setPlaylistTracks(tracks, playlistId: playlist.itemId)
 
         return tracks
+    }
+
+    func loadArtistDetails(artist: Artist) async throws -> (albums: [Album], tracks: [Track]) {
+        // Try cache first
+        let cachedAlbums = await cache.getArtistAlbums(artistId: artist.itemId)
+        let cachedTracks = await cache.getArtistTracks(artistId: artist.itemId)
+
+        if let albums = cachedAlbums, let tracks = cachedTracks {
+            return (albums, tracks)
+        }
+
+        async let albumsTask = client.fetchArtistAlbums(artistId: artist.itemId, provider: artist.provider)
+        async let tracksTask = client.fetchArtistTracks(artistId: artist.itemId, provider: artist.provider)
+
+        let (fetchedAlbums, fetchedTracks) = try await (albumsTask, tracksTask)
+
+        // Cache the results
+        await cache.setArtistAlbums(fetchedAlbums, artistId: artist.itemId)
+        await cache.setArtistTracks(fetchedTracks, artistId: artist.itemId)
+
+        return (fetchedAlbums, fetchedTracks)
     }
 
     private func performSearch(_ query: String) async {

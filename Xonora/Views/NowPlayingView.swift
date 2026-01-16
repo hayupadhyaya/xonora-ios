@@ -35,8 +35,9 @@ struct NowPlayingView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 24)
         }
+        .colorScheme(.dark)
         .background(
-            backgroundView.ignoresSafeArea()
+            albumArtView.ignoresSafeArea()
         )
         .gesture(
             isPresentedModally ? 
@@ -59,10 +60,9 @@ struct NowPlayingView: View {
         .sheet(isPresented: $showQueue) {
             QueueView()
         }
-        .preferredColorScheme(.dark)
     }
-
-    private var backgroundView: some View {
+    
+    private var albumArtView: some View {
         ZStack {
             AsyncImage(url: trackImageURL) { phase in
                 switch phase {
@@ -70,8 +70,8 @@ struct NowPlayingView: View {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .blur(radius: 60)
-                        .scaleEffect(1.2)
+                        .blur(radius: 30) // Reduced from 60 to improve rendering performance
+                        .scaleEffect(1.1)
                 case .failure, .empty:
                     Color.xonoraGradient
                 @unknown default:
@@ -79,7 +79,7 @@ struct NowPlayingView: View {
                 }
             }
 
-            Color.black.opacity(0.3)
+            Color.black.opacity(0.5)
         }
     }
 
@@ -106,7 +106,7 @@ struct NowPlayingView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.white.opacity(0.7))
 
-                Text(playerManager.currentTrack?.album?.name ?? "Library")
+                Text(playerManager.currentSource ?? playerManager.currentTrack?.album?.name ?? "Library")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)

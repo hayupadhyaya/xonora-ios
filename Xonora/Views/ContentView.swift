@@ -4,6 +4,7 @@ struct ContentView: View {
     @EnvironmentObject var playerViewModel: PlayerViewModel
     @EnvironmentObject var libraryViewModel: LibraryViewModel
     @State private var selectedTab = 0
+    @State private var isPlayerExpanded = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -20,21 +21,30 @@ struct ContentView: View {
                     }
                     .tag(1)
 
-                NowPlayingView(isPresentedModally: false)
-                    .tabItem {
-                        Label("Now Playing", systemImage: "play.circle.fill")
-                    }
-                    .tag(2)
-
                 SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gear")
                     }
-                    .tag(3)
+                    .tag(2)
+            }
+
+            // Mini Player Overlay - positioned above system tab bar
+            if playerViewModel.hasTrack && !isPlayerExpanded && selectedTab != 2 {
+                MiniPlayerView {
+                    withAnimation {
+                        isPlayerExpanded = true
+                    }
+                }
+                .padding(.bottom, 52) // Height of standard tab bar + margin
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .zIndex(1)
             }
         }
         .sheet(isPresented: $playerViewModel.showingServerSetup) {
             ServerSetupView()
+        }
+        .fullScreenCover(isPresented: $isPlayerExpanded) {
+            NowPlayingView(isPresentedModally: true)
         }
         .onAppear {
             if playerViewModel.serverURL.isEmpty {
@@ -92,6 +102,12 @@ struct ServerSetupView: View {
                     }
                     .padding(.horizontal, 24)
 
+                    // Discovered Servers
+                    if !playerViewModel.discoveredServers.isEmpty {
+                        discoveredServersSection
+                            .padding(.horizontal, 24)
+                    }
+
                     // Status indicator
                     statusView
                         .padding(.horizontal, 24)
@@ -129,10 +145,59 @@ struct ServerSetupView: View {
             withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
                 animateGradient = true
             }
+            playerViewModel.startDiscovery()
+        }
+        .onDisappear {
+            playerViewModel.stopDiscovery()
         }
         .onChange(of: playerViewModel.isConnected) { connected in
             if connected {
                 dismiss()
+            }
+        }
+    }
+
+    // MARK: - Discovered Servers
+
+    private var discoveredServersSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Discovered Servers")
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(.white.opacity(0.9))
+                .padding(.leading, 4)
+
+            ForEach(playerViewModel.discoveredServers) { server in
+                Button {
+                    // Normalize the URL from discovery
+                    // Discovered server URL is ws:// but we want http:// for the main API
+                    let host = server.hostname
+                    let port = server.port
+                    serverURL = "http://\(host):\(port)"
+                    
+                    // If the discovery URL has a different port or path, it's handled by sendspinClient.connect
+                    // But for the main MA server, we usually expect standard ports.
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(server.name)
+                                .font(.body.weight(.semibold))
+                                .foregroundColor(.white)
+                            Text(server.url.absoluteString)
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        Spacer()
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.xonoraCyan)
+                    }
+                    .padding()
+                    .background(glassBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                }
             }
         }
     }
@@ -386,54 +451,26 @@ struct SearchView: View {
         NavigationStack {
             VStack {
                 if libraryViewModel.searchQuery.isEmpty {
-                    if #available(iOS 17.0, *) {
-                        ContentUnavailableView(
-                            "Search Music",
-                            systemImage: "magnifyingglass",
-                            description: Text("Search for albums, artists, and tracks")
-                        )
-                    } else {
-                        VStack(spacing: 16) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 60))
-                                .foregroundColor(.secondary)
-                            Text("Search Music")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                            Text("Search for albums, artists, and tracks")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                    }
+                    ContentUnavailableView(
+                        "Search Music",
+                        systemImage: "magnifyingglass",
+                        description: Text("Search for albums, artists, and tracks")
+                    )
                 } else if libraryViewModel.isSearching {
                     ProgressView()
                 } else if libraryViewModel.searchResults.albums.isEmpty &&
                           libraryViewModel.searchResults.artists.isEmpty &&
                           libraryViewModel.searchResults.tracks.isEmpty {
-                    if #available(iOS 17.0, *) {
-                        ContentUnavailableView.search(text: libraryViewModel.searchQuery)
-                    } else {
-                        VStack(spacing: 16) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 60))
-                                .foregroundColor(.secondary)
-                            Text("No Results")
-                                .font(.title2)
-                                .fontWeight(.semibold)
-                            Text("No results for \"\(libraryViewModel.searchQuery)\"")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                    }
+                    ContentUnavailableView.search(text: libraryViewModel.searchQuery)
                 } else {
                     searchResultsList
                 }
             }
-            .navigationTitle("Search")
-            .searchable(text: $libraryViewModel.searchQuery, prompt: "Albums, Artists, Songs")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $libraryViewModel.searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "Albums, Artists, Songs")
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     private var searchResultsList: some View {
@@ -446,7 +483,7 @@ struct SearchView: View {
                             showArtwork: true,
                             isPlaying: playerViewModel.playerManager.currentTrack?.id == track.id,
                             onTap: {
-                                playerViewModel.playTrack(track, fromQueue: libraryViewModel.searchResults.tracks)
+                                playerViewModel.playTrack(track, fromQueue: libraryViewModel.searchResults.tracks, sourceName: "Search")
                             }
                         )
                     }
@@ -505,12 +542,19 @@ struct SearchView: View {
                 }
             }
         }
+        .scrollDismissesKeyboard(.immediately)
+        .background(Color(UIColor.systemBackground).ignoresSafeArea())
+        .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: playerViewModel.hasTrack ? 130 : 50)
+        }
     }
 }
 
 struct SettingsView: View {
     @EnvironmentObject var playerViewModel: PlayerViewModel
     @ObservedObject private var client = XonoraClient.shared
+    @ObservedObject private var sendspinClient = SendspinClient.shared
+    @State private var localPlayerName: String = ""
 
     var body: some View {
         NavigationStack {
@@ -580,11 +624,24 @@ struct SettingsView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
+                        
+                        HStack {
+                            Label("Player Name", systemImage: "pencil")
+                            TextField("Name", text: $localPlayerName)
+                                .multilineTextAlignment(.trailing)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    sendspinClient.updatePlayerName(localPlayerName)
+                                }
+                        }
                     }
                 } header: {
                     Text("Local Audio (Sendspin)")
                 } footer: {
                     Text("Enable to receive audio streams via Sendspin.")
+                }
+                .onAppear {
+                    localPlayerName = sendspinClient.playerName
                 }
 
                 Section {
@@ -640,6 +697,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 
     private var connectionStatusText: String {
@@ -670,5 +728,128 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .environmentObject(PlayerViewModel())
             .environmentObject(LibraryViewModel())
+    }
+}
+import SwiftUI
+
+struct MiniPlayerView: View {
+    @ObservedObject private var playerManager = PlayerManager.shared
+    var expandAction: () -> Void
+
+    private var progress: Double {
+        guard playerManager.duration > 0 else { return 0 }
+        let value = min(max(playerManager.currentTime / playerManager.duration, 0), 1)
+        return value
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Content
+            HStack(spacing: 12) {
+                // Artwork
+                artworkView
+
+                // Track Info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(playerManager.currentTrack?.name ?? "Not Playing")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .lineLimit(1)
+
+                    Text(playerManager.currentTrack?.artistNames ?? "")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                // Controls
+                HStack(spacing: 20) {
+                    Button {
+                        playerManager.previous()
+                    } label: {
+                        Image(systemName: "backward.fill")
+                            .font(.title3)
+                            .foregroundColor(.primary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        playerManager.togglePlayPause()
+                    } label: {
+                        Image(systemName: playerManager.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.title3)
+                            .foregroundColor(.primary)
+                    }
+                    .buttonStyle(.plain)
+
+                    Button {
+                        playerManager.next()
+                    } label: {
+                        Image(systemName: "forward.fill")
+                            .font(.title3)
+                            .foregroundColor(.primary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            ZStack(alignment: .leading) {
+                // Background
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+
+                // Progress indicator with TimelineView for smooth animation
+                TimelineView(.animation(minimumInterval: 0.1, paused: !playerManager.isPlaying)) { timeline in
+                    GeometryReader { geometry in
+                        let animatedProgress = calculateAnimatedProgress(at: timeline.date)
+                        Rectangle()
+                            .fill(Color.accentColor.opacity(0.15))
+                            .frame(width: geometry.size.width * animatedProgress)
+                    }
+                }
+            }
+        )
+        .frame(height: 72)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
+        .padding(.horizontal, 12)
+        .onTapGesture {
+            expandAction()
+        }
+    }
+
+    private func calculateAnimatedProgress(at date: Date) -> Double {
+        guard playerManager.duration > 0 else { return 0 }
+        
+        var current = playerManager.currentTime
+        
+        if playerManager.isPlaying {
+            let elapsedSinceLastUpdate = date.timeIntervalSince(playerManager.lastUpdateTime)
+            current += max(0, elapsedSinceLastUpdate)
+        }
+        
+        return min(max(current / playerManager.duration, 0), 1)
+    }
+
+    private var artworkView: some View {
+        let url = XonoraClient.shared.getImageURL(
+            for: playerManager.currentTrack?.imageUrl ?? playerManager.currentTrack?.album?.imageUrl,
+            size: .thumbnail
+        )
+
+        return CachedAsyncImage(url: url) {
+            Color.gray.opacity(0.3)
+                .overlay {
+                    Image(systemName: "music.note")
+                        .foregroundColor(.gray)
+                }
+        }
+        .frame(width: 52, height: 52)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

@@ -1,115 +1,80 @@
 # Xonora: Music Assistant Player for iOS
 
-Xonora is a high-performance, native iOS client for Music Assistant. Built with SwiftUI and the custom **SendspinKit** audio engine, it delivers gapless, synchronized, and high-fidelity playback from your self-hosted server directly to your iOS device.
+Xonora is a high-performance, native iOS client for [Music Assistant](https://music-assistant.io/). Built with SwiftUI and the custom **SendspinKit** audio engine, it delivers gapless, synchronized, and high-fidelity playback from your self-hosted server directly to your iOS device.
 
 ## Beta Testing
 
 Xonora is currently in open alpha. You can join the public TestFlight to help test the app on your device:
+
 **[Join the Xonora TestFlight](https://testflight.apple.com/join/5rUk1uqN)**
+
+> **Note:** Due to Apple's review process, new updates and builds may be delayed for up to **48 hours** before becoming available in TestFlight.
 
 ## Screenshots
 
 <p align="center">
-  <img src="V1.0.3 Screenshots/LoginView.PNG" width="200" alt="Login Screen"/>
-  <img src="V1.0.3 Screenshots/SettingsView.PNG" width="200" alt="Settings"/>
-  <img src="V1.0.3 Screenshots/Library View_Album.PNG" width="200" alt="Library View"/>
+  <img src="V1.0.4 Screenshots/AlbumsView.PNG" width="200" alt="Albums View"/>
+  <img src="V1.0.4 Screenshots/SongsView.PNG" width="200" alt="Songs View"/>
+  <img src="V1.0.4 Screenshots/PlaylistsView.PNG" width="200" alt="Playlists View"/>
 </p>
 
 <p align="center">
-  <img src="V1.0.3 Screenshots/AlbumView.PNG" width="200" alt="Album Detail"/>
-  <img src="V1.0.3 Screenshots/NowPlayingView.PNG" width="200" alt="Now Playing"/>
-  <img src="V1.0.3 Screenshots/SearchView.PNG" width="200" alt="Search"/>
+  <img src="V1.0.4 Screenshots/ArtistView.PNG" width="200" alt="Artists View"/>
+  <img src="V1.0.4 Screenshots/NowPlayingView.PNG" width="200" alt="Now Playing"/>
+  <img src="V1.0.4 Screenshots/SettingsView.PNG" width="200" alt="Settings"/>
 </p>
+
+## Key Features
+
+### **Initially Implemented**
+*   **Native SwiftUI Interface:** Clean, Apple Music-inspired UI.
+*   **Sendspin Streaming:** Lossless PCM/FLAC audio streaming via the Sendspin protocol.
+*   **Library Browsing:** Access to Albums, Artists, and Playlists.
+*   **Remote Command Center:** Support for Lock Screen controls and Bluetooth hardware buttons.
+
+### **Major Improvements (v1.0.4)**
+*   **mDNS Discovery:** Automatic local network scanning for Music Assistant servers—no more manual IP entry.
+*   **Hardware Volume Control:** The in-app volume slider now directly controls the device/player volume.
+*   **Artist Navigation:** Fixed the artist list functionality. Tapping an artist now correctly navigates to an Artist Detail View featuring top tracks and albums.
+*   **Shuffle Logic Overhaul:** Fully redesigned shuffle behavior. Skips now strictly follow the shuffled queue order, and toggling shuffle actively randomizes the current session.
+*   **Intelligent Artwork:** Seamlessly handles local Plex/SMB art via proxy while fast-loading public CDN images (Apple Music, TheAudioDB) directly.
+*   **Robust Connectivity:** Added auto-reconnection with exponential backoff and instant foreground recovery if the connection drops during background suspension.
+*   **Performance Engine:** Background library decoding and optimized rendering to eliminate the 15-second startup "hang" for large libraries.
+
+## Upcoming Features
+*   **Audiobooks:** Dedicated support for browsing and streaming your audiobook collection.
+*   **Podcasts:** Full integration for discovering and listening to your favorite podcasts.
+*   **Radio:** Access to live radio stations and internet radio streams via Music Assistant.
 
 ## Release Notes
 
+### Version 1.0.4
+*   **TabView Categories:** Refactored the Library category pane (Albums, Songs, Playlists, Artists) into a system-managed TabView. Switch categories by tapping the top bar or swiping horizontally.
+*   **Persistent Mini Player:** Added a Mini Player bar that overlays the Library and Search tabs for quick access to controls while browsing.
+*   **Auto-Player Selection:** The app now proactively selects your iPhone as the active player as soon as the Sendspin connection is established.
+*   **Search UX:** Added automatic keyboard dismissal when scrolling through search results.
+*   **"Playing From" Context:** Improved the player labels to accurately show the playback source (e.g., "Songs," "Search," or specific Album).
+*   **Queue Fixes:** Resolved an issue where the queue button was unresponsive and fixed a bug where skipping tracks would occasionally clear the remaining queue.
+*   **Stability:** Increased WebSocket timeouts to 24 hours and implemented safe log truncation to prevent system-level crashes.
+
 ### Version 1.0.3
-
-This release focuses on library management, network stability, and bug fixes.
-
-#### Library Features
-- **Songs Tab:** Added a dedicated "Songs" tab in the Library to view individual tracks separately from albums
-- **Track Management:** You can now add individual tracks to your library and view them independently
-  - Adding a single track shows only that track in the Songs section
-  - Opening the album from a track displays all tracks in the album, not just the ones in your library
-  - This behavior matches how Music Assistant handles library items on the server side (applies when using providers like Apple Music)
-- **Improved Track Display:** Track numbers now appear before artwork in the Songs view for easier navigation
-- **Fixed Library Playback:** Resolved issues that prevented playing random tracks from the Library
-
-#### API & Network Improvements
-- **Music Assistant API:** Fixed incorrect API commands (now using `music/library/add_item` and `music/favorites/add_item`)
-- **Network Stability:** Eliminated "Reporter disconnected" errors by implementing a shared URLSession with connection pooling
-- **Timeout Handling:** Increased WebSocket timeout from 5 to 30 seconds for more reliable connections
-- **HTTP/3 Disable:** Disabled QUIC protocol for local servers to prevent packet parsing errors
-- **Reduced Stuttering:** Optimized image loading and network requests to eliminate audio interruptions during playback
-
-#### UI & UX Fixes
-- **Full-Screen Views:** Fixed black rectangles that appeared at the top and bottom of library scroll views
-- **Dynamic Version Display:** App version now reads directly from bundle info
-- **Metadata Caching:** Added track caching with 1-hour expiry for faster library loading
-
-#### Technical Improvements
-- **Color Management:** Resolved duplicate color definition build errors
-- **URLSession Optimization:** Single shared session with ephemeral configuration and 4 concurrent connections per host
-- **Memory Efficiency:** Improved image cache with better resource management
-
-### Version 1.0.1 alpha
-
-This release introduces significant architectural improvements to the audio subsystem and network layer.
-
-#### Audio Engine (SendspinKit)
-- **New Audio Architecture:** Fully integrated **SendspinKit**, a custom audio engine built on `AVAudioEngine` and `Accelerate` (vDSP).
-- **Stutter-Free Playback:** Implemented a new timestamp-based audio scheduler with a tight 5ms processing loop and a 400ms jitter buffer window.
-- **Improved Buffer Management:** Added a critical drop threshold of 600ms and burst clock synchronization to handle network variances without audible artifacts.
-- **Thread Safety:** Rewrote the client core using `os_unfair_lock` and strict thread isolation. Audio processing now runs on a dedicated high-priority serial queue, completely decoupled from the UI thread.
-- **Volume Processing:** Implemented hardware-accelerated (vDSP) volume scaling for high-efficiency PCM manipulation.
-
-#### Connectivity & Stability
-- **Connection Timeout:** Added a 5-second strict timeout for server connections. The app now fails fast if the server is unreachable, preventing indefinite UI hangs.
-- **Authentication Handshake:** Fixed the Sendspin protocol handshake (`AuthMessage` -> `AuthOKMessage`) to correctly pass and validate access tokens.
-- **Proxy Bypass:** Implemented strict proxy bypass for local network connections to ensure low-latency discovery and streaming.
-- **Deployment Target:** Updated minimum deployment target to iOS 17.0 to leverage modern concurrency features.
-
-## Features
-
-- **Native Interface:** A clean, Apple Music-inspired UI built entirely with SwiftUI.
-- **Sendspin Streaming:** Stream lossless PCM/FLAC audio directly from your Music Assistant server.
-- **CarPlay Support:** Full CarPlay integration for browsing and playback in the vehicle.
-- **Library Management:** Browse albums, artists, songs, and playlists with search capabilities and individual track management.
-- **Background Playback:** Robust background audio support with Lock Screen and Control Center integration (`MPNowPlayingInfoCenter`).
-- **Real-time Updates:** Persistent WebSocket connection for instant state synchronization across devices.
+*   **Songs Tab:** Added a dedicated view for individual tracks in the library.
+*   **Track Management:** Ability to add or remove individual tracks to/from your library.
+*   **Metadata Caching:** Added local persistence with 1-hour expiry for instant subsequent library loads.
 
 ## Requirements
-
-- iOS 17.0 or later
-- Music Assistant Server (Schema 28+)
-- Sendspin Player Provider enabled in Music Assistant
-
-## Installation
-
-1. **TestFlight (Recommended):** Join the [Public Beta](https://testflight.apple.com/join/5rUk1uqN) to install via the TestFlight app.
-2. **Manual Build:**
-   - Clone the repository.
-   - Open `Xonora.xcodeproj` in Xcode 15+.
-   - Configure your signing team in project settings.
-   - Build and run on a physical device (Sendspin audio streaming requires a real network interface).
-
-## Configuration
-
-1. **Server Connection:** On first launch, enter your Music Assistant server URL (e.g., `http://192.168.1.50:8095`) and a valid access token.
-2. **Audio Setup:**
-   - Ensure the **Sendspin** provider is installed and enabled in Music Assistant.
-   - In Xonora settings, enable "Sendspin Streaming".
-   - The app will automatically advertise itself as a player to the server.
+*   **iOS:** 17.0 or later.
+*   **Music Assistant Server:** Version 2.0 (Schema 28) or later.
+*   **Sendspin:** The Sendspin player provider must be enabled on your server.
 
 ## Architecture
-
-The project follows a strict MVVM (Model-View-ViewModel) pattern with a clear separation of concerns:
-
-- **XonoraClient:** Singleton responsible for the persistent WebSocket control connection and Music Assistant API calls.
-- **SendspinClient / SendspinKit:** A dedicated subsystem for handling the high-speed binary audio stream, clock synchronization, and audio rendering.
-- **PlayerManager:** Central coordinator for playback state, UI updates, and remote command handling.
+*   **MVVM Design:** Strict separation of concerns between views, logic, and data.
+*   **SendspinKit:** A dedicated audio subsystem handling binary streams, clock synchronization, and vDSP-accelerated volume scaling.
+*   **URLSession WebSocket:** Modern, efficient networking using system-standard protocols for long-lived connections.
 
 ## License
-
 This project is open-source software for personal use with Music Assistant.
+
+---
+
+**Enjoy your music with Xonora! 🎶**

@@ -21,13 +21,19 @@ enum RepeatMode: Int {
 class PlayerManager: ObservableObject {
     @Published var playbackState: PlaybackState = .stopped
     @Published var currentTrack: Track?
-    @Published var currentTime: TimeInterval = 0
+    @Published var currentTime: TimeInterval = 0 {
+        didSet {
+            lastUpdateTime = Date()
+        }
+    }
     @Published var duration: TimeInterval = 0
+    @Published var lastUpdateTime: Date = Date()
     @Published var queue: [Track] = []
     @Published var currentIndex: Int = 0
     @Published var shuffleEnabled: Bool = false
     @Published var repeatMode: RepeatMode = .off
     @Published var volume: Float = 1.0
+    @Published var currentSource: String?
 
     private var progressTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
@@ -41,8 +47,11 @@ class PlayerManager: ObservableObject {
     static let shared = PlayerManager()
 
     init() {
-        setupRemoteCommandCenter()
-        setupNotifications()
+        // Setup remote commands and notifications asynchronously to avoid blocking init
+        Task {
+            await setupRemoteCommandCenter()
+            await setupNotifications()
+        }
 
         SendspinClient.shared.$isBuffering
             .receive(on: DispatchQueue.main)
@@ -59,14 +68,22 @@ class PlayerManager: ObservableObject {
     
     private func startProgressTimer() {
         progressTimer?.invalidate()
-        progressTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+
+        // Create timer on main run loop explicitly
+        let timer = Timer(timeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+
+            // Simply increment by 1 second on main actor
             Task { @MainActor in
-                guard let self = self else { return }
                 if self.playbackState == .playing {
-                    self.currentTime += 1
+                    // Manually trigger objectWillChange to ensure SwiftUI views update
+                    self.objectWillChange.send()
+                    self.currentTime += 1.0
+
                     if self.duration > 0 && self.currentTime >= self.duration {
                         // Handle end? Server usually sends event.
                     }
+
                     // Only update now playing info periodically (every 5 seconds) to reduce lock screen thrashing
                     // or when the track changes. The system handles the elapsed time advancement if we set the rate.
                     if Int(self.currentTime) % 5 == 0 {
@@ -75,6 +92,9 @@ class PlayerManager: ObservableObject {
                 }
             }
         }
+
+        RunLoop.main.add(timer, forMode: .common)
+        progressTimer = timer
     }
     
     private func stopProgressTimer() {
@@ -221,11 +241,17 @@ class PlayerManager: ObservableObject {
 
     // MARK: - Playback Control
 
-    func playTrack(_ track: Track, fromQueue tracks: [Track]? = nil) {
+    func playTrack(_ track: Track, fromQueue tracks: [Track]? = nil, sourceName: String? = nil) {
         if let tracks = tracks {
             queue = tracks
             currentIndex = tracks.firstIndex(where: { $0.id == track.id }) ?? 0
+        } else {
+            // If no queue context provided, play just this track
+            queue = [track]
+            currentIndex = 0
         }
+        
+        self.currentSource = sourceName
 
         guard SendspinClient.shared.isConnected else {
             playbackState = .error("Sendspin not connected. Please enable it in Settings.")
@@ -282,6 +308,15 @@ class PlayerManager: ObservableObject {
                 try await XonoraClient.shared.playMedia(uris: uris)
             } catch {
                 print("[PlayerManager] Failed to send play command: \(error)")
+                
+                // Suppress "Request timeout" error if it happens, as it often means the server 
+                // processed the command but the acknowledgement was lost/delayed, while music plays fine.
+                let nsError = error as NSError
+                if nsError.code == -1 && nsError.userInfo[NSLocalizedDescriptionKey] as? String == "Request timeout" {
+                    print("[PlayerManager] Suppressing Request timeout error.")
+                    return
+                }
+                
                 await MainActor.run {
                     self.playbackState = .error("Failed to play: \(error.localizedDescription)")
                 }
@@ -322,28 +357,32 @@ class PlayerManager: ObservableObject {
     func next() {
         guard !queue.isEmpty else { return }
 
-        if shuffleEnabled {
-            currentIndex = Int.random(in: 0..<queue.count)
-        } else {
-            currentIndex = (currentIndex + 1) % queue.count
-        }
+        // Always advance sequentially. Shuffle is handled by reordering the queue itself.
+        currentIndex = (currentIndex + 1) % queue.count
 
         let nextTrack = queue[currentIndex]
-        playTrack(nextTrack)
+        playTrack(nextTrack, fromQueue: queue, sourceName: currentSource)
     }
 
     func previous() {
+        // If we are more than 3 seconds into the track, restart it
+        if currentTime > 3 {
+            seek(to: 0)
+            return
+        }
+
         guard !queue.isEmpty else { return }
 
-        if shuffleEnabled {
-            currentIndex = Int.random(in: 0..<queue.count)
-        }
-        else {
-            currentIndex = currentIndex > 0 ? currentIndex - 1 : queue.count - 1
+        // Check if we are at the start of the queue
+        if currentIndex > 0 {
+            currentIndex -= 1
+        } else {
+            // Wrap around to the last track
+            currentIndex = queue.count - 1
         }
 
         let previousTrack = queue[currentIndex]
-        playTrack(previousTrack)
+        playTrack(previousTrack, fromQueue: queue, sourceName: currentSource)
     }
 
     func seek(to time: TimeInterval) {
@@ -366,6 +405,38 @@ class PlayerManager: ObservableObject {
     func toggleShuffle() {
         shuffleEnabled.toggle()
         Task { try? await XonoraClient.shared.setShuffle(enabled: shuffleEnabled) }
+        
+        guard !queue.isEmpty else { return }
+        
+        if shuffleEnabled {
+            // Shuffle the queue, ensuring current track stays playing
+            var tracks = queue
+            if let current = currentTrack, let idx = tracks.firstIndex(where: { $0.id == current.id }) {
+                tracks.remove(at: idx)
+                tracks.shuffle()
+                tracks.insert(current, at: 0)
+                currentIndex = 0
+            } else {
+                tracks.shuffle()
+                currentIndex = 0
+            }
+            queue = tracks
+        } else {
+            // Restore album order (approximate by sorting)
+            var tracks = queue
+            tracks.sort {
+                let disc1 = $0.discNumber ?? 1
+                let disc2 = $1.discNumber ?? 1
+                if disc1 != disc2 { return disc1 < disc2 }
+                return ($0.trackNumber ?? 0) < ($1.trackNumber ?? 0)
+            }
+            queue = tracks
+            
+            // Update currentIndex to match current track's new position
+            if let current = currentTrack {
+                currentIndex = queue.firstIndex(where: { $0.id == current.id }) ?? 0
+            }
+        }
     }
 
     func cycleRepeatMode() {
@@ -403,9 +474,10 @@ class PlayerManager: ObservableObject {
 
     func playAlbum(_ tracks: [Track], startingAt index: Int = 0) {
         guard !tracks.isEmpty else { return }
+        let albumName = tracks[index].album?.name
         queue = tracks
         currentIndex = index
-        playTrack(tracks[index])
+        playTrack(tracks[index], fromQueue: tracks, sourceName: albumName)
     }
 
     // MARK: - Now Playing Info

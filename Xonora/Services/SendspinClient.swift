@@ -12,7 +12,19 @@ class SendspinClient: ObservableObject {
     @Published var isBuffering = false
     @Published var bufferProgress: Double = 0.0
     @Published var connectionError: String?
-    @Published var playerName: String = "iOS Sendspin"
+    @Published var playerName: String = UIDevice.current.name
+    @Published var clientId: String?
+    
+    private let playerNameKey = "SendspinPlayerName"
+    private var lastHost: String?
+    private var lastPort: UInt16?
+    private var lastScheme: String?
+    private var lastAccessToken: String?
+    
+    // Reconnection logic
+    private var reconnectAttempts = 0
+    private let maxReconnectAttempts = 5
+    private var reconnectTask: Task<Void, Never>?
     
     // Internal client from SendspinKit
     private var client: SendspinKit.SendspinClient?
@@ -21,22 +33,56 @@ class SendspinClient: ObservableObject {
     static let shared = SendspinClient()
     
     private init() {
-        // Initialize logic if needed
+        if let savedName = UserDefaults.standard.string(forKey: playerNameKey) {
+            self.playerName = savedName
+        }
+        
+        // Auto-reconnect on foreground if needed
+        Task { @MainActor in
+            NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let self = self else { return }
+                if !self.isConnected && self.lastHost != nil {
+                    self.safeLog("[SendspinClient] App foregrounded, checking connection...")
+                    // Reset attempts to give it a fresh try
+                    self.reconnectAttempts = 0
+                    self.attemptReconnect()
+                }
+            }
+        }
+    }
+    
+    func updatePlayerName(_ name: String) {
+        self.playerName = name
+        UserDefaults.standard.set(name, forKey: playerNameKey)
+        
+        // Reconnect if we have connection details
+        if let host = lastHost, let port = lastPort, let scheme = lastScheme {
+            connect(to: host, port: port, scheme: scheme, accessToken: lastAccessToken)
+        }
     }
     
     func connect(to host: String, port: UInt16 = 8927, scheme: String = "ws", accessToken: String? = nil) {
+        self.lastHost = host
+        self.lastPort = port
+        self.lastScheme = scheme
+        self.lastAccessToken = accessToken
+        
+        // Reset reconnection state for fresh manual connection
+        self.reconnectAttempts = 0
+        self.reconnectTask?.cancel()
+
         let urlString = "\(scheme)://\(host):\(port)/sendspin"
-        print("[SendspinClient] Connecting to: \(urlString)")
-        print("[SendspinClient] Access token provided: \(accessToken != nil)")
-        print("[SendspinClient] Access token length: \(accessToken?.count ?? 0)")
+        self.safeLog("[SendspinClient] Connecting to: \(urlString)")
+        self.safeLog("[SendspinClient] Access token provided: \(accessToken != nil)")
+        self.safeLog("[SendspinClient] Access token length: \(accessToken?.count ?? 0)")
 
         guard let url = URL(string: urlString) else {
             self.connectionError = "Invalid URL: \(urlString)"
-            print("[SendspinClient] ERROR: Invalid URL")
+            self.safeLog("[SendspinClient] ERROR: Invalid URL")
             return
         }
 
-        disconnect()
+        disconnectInternal(keepConfig: true)
 
         // Create configuration for the client
         // Only advertise 48kHz support to force server-side resampling if needed
@@ -48,15 +94,17 @@ class SendspinClient: ObservableObject {
             ]
         )
 
-        let clientName = UIDevice.current.name
+        let clientName = self.playerName
         let clientId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+        self.clientId = clientId
+        // self.playerName is already set
 
-        print("[SendspinClient] Client ID: \(clientId)")
-        print("[SendspinClient] Client Name: \(clientName)")
+        self.safeLog("[SendspinClient] Client ID: \(clientId)")
+        self.safeLog("[SendspinClient] Client Name: \(clientName)")
 
         let client = SendspinKit.SendspinClient(
             clientId: clientId,
-            name: "iOS Player (\(clientName))",
+            name: clientName,
             roles: [.playerV1],
             playerConfig: playerConfig,
             accessToken: accessToken
@@ -73,18 +121,29 @@ class SendspinClient: ObservableObject {
 
         Task {
             do {
-                print("[SendspinClient] Starting connection...")
+                self.safeLog("[SendspinClient] Starting connection...")
                 try await client.connect(to: url)
-                print("[SendspinClient] Connection initiated successfully")
+                self.safeLog("[SendspinClient] Connection initiated successfully")
             } catch {
-                print("[SendspinClient] Connection error: \(error)")
+                self.safeLog("[SendspinClient] Connection error: \(error)")
                 self.connectionError = "Connection failed: \(error.localizedDescription)"
                 self.isConnected = false
+                self.attemptReconnect()
             }
         }
     }
     
     func disconnect() {
+        disconnectInternal(keepConfig: false)
+    }
+    
+    private func disconnectInternal(keepConfig: Bool) {
+        reconnectTask?.cancel()
+        if !keepConfig {
+            // Prevent auto-reconnect if user explicitly disconnected
+            reconnectAttempts = maxReconnectAttempts
+        }
+        
         eventTask?.cancel()
         Task {
             await client?.disconnect()
@@ -94,16 +153,40 @@ class SendspinClient: ObservableObject {
         isBuffering = false
     }
     
+    private func attemptReconnect() {
+        guard let host = lastHost, let port = lastPort, let scheme = lastScheme else { return }
+        
+        guard reconnectAttempts < maxReconnectAttempts else {
+            self.safeLog("[SendspinClient] Max reconnection attempts reached")
+            self.connectionError = "Failed to reconnect after multiple attempts"
+            return
+        }
+        
+        reconnectAttempts += 1
+        let delay = Double(reconnectAttempts) * 2.0
+        self.safeLog("[SendspinClient] Will attempt reconnect #\(reconnectAttempts) in \(delay) seconds...")
+        
+        reconnectTask?.cancel()
+        reconnectTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            
+            self.safeLog("[SendspinClient] Attempting reconnection...")
+            self.connect(to: host, port: port, scheme: scheme, accessToken: self.lastAccessToken)
+        }
+    }
+    
     private func handleEvent(_ event: ClientEvent) {
-        print("[SendspinClient] Event received: \(event)")
+        // safeLog("[SendspinClient] Event received: \(event)")
         switch event {
         case .serverConnected(let info):
-            print("[SendspinClient] Connected to \(info.name)")
+            // safeLog("[SendspinClient] Connected to \(info.name)")
             self.isConnected = true
             self.connectionError = nil
+            self.reconnectAttempts = 0 // Reset on success
 
         case .streamStarted(let format):
-            print("[SendspinClient] Stream started: \(format)")
+            // safeLog("[SendspinClient] Stream started: \(format)")
             self.isBuffering = true
             // Simulate buffering progress for UI
             Task {
@@ -115,18 +198,31 @@ class SendspinClient: ObservableObject {
             }
 
         case .streamEnded:
-            print("[SendspinClient] Stream ended")
+            // safeLog("[SendspinClient] Stream ended")
             self.isBuffering = false
             self.bufferProgress = 0.0
 
         case .error(let msg):
-            print("[SendspinClient] Error: \(msg)")
+            // safeLog("[SendspinClient] Error: \(msg)")
             self.connectionError = msg
+            // If error occurs, we assume connection is dead or compromised
+            // However, SendspinKit might auto-recover or stay connected?
+            // Usually fatal errors come here.
+            // If connection timeout, we definitely want to reconnect.
+            if msg.contains("Connection timeout") || msg.contains("disconnected") || !isConnected {
+                self.isConnected = false
+                self.attemptReconnect()
+            }
 
         default:
-            print("[SendspinClient] Unhandled event: \(event)")
+            // safeLog("[SendspinClient] Unhandled event: \(event)")
             break
         }
+    }
+
+    private func safeLog(_ message: String) {
+        let logMessage = message.count > 1000 ? String(message.prefix(1000)) + "... (truncated)" : message
+        print(logMessage)
     }
     
     // Playback controls (proxied to client if supported, or handled via server commands)
@@ -152,5 +248,9 @@ class SendspinClient: ObservableObject {
             // Reconnect logic might be needed if we disconnect.
             // Better to just let the stream end event handle it.
         }
+    }
+    
+    func getPlaybackTime() async -> TimeInterval {
+        return await client?.getPlaybackTime() ?? 0
     }
 }

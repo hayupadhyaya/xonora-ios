@@ -16,6 +16,8 @@ actor MetadataCache {
     private var tracksCache: [Track]?
     private var albumTracksCache: [String: [Track]] = [:] // albumId -> tracks
     private var playlistTracksCache: [String: [Track]] = [:] // playlistId -> tracks
+    private var artistAlbumsCache: [String: [Album]] = [:] // artistId -> albums
+    private var artistTracksCache: [String: [Track]] = [:] // artistId -> tracks
 
     // Cache timestamps
     private var albumsCacheTime: Date?
@@ -129,6 +131,26 @@ actor MetadataCache {
         Task { await saveToDisk(tracks, filename: "playlist_\(playlistId).json") }
     }
 
+    // MARK: - Artist Details
+
+    func getArtistAlbums(artistId: String) -> [Album]? {
+        return artistAlbumsCache[artistId]
+    }
+
+    func setArtistAlbums(_ albums: [Album], artistId: String) {
+        artistAlbumsCache[artistId] = albums
+        Task { await saveToDisk(albums, filename: "artist_albums_\(artistId).json") }
+    }
+
+    func getArtistTracks(artistId: String) -> [Track]? {
+        return artistTracksCache[artistId]
+    }
+
+    func setArtistTracks(_ tracks: [Track], artistId: String) {
+        artistTracksCache[artistId] = tracks
+        Task { await saveToDisk(tracks, filename: "artist_tracks_\(artistId).json") }
+    }
+
     // MARK: - Clear Cache
 
     func clearAll() {
@@ -138,6 +160,8 @@ actor MetadataCache {
         tracksCache = nil
         albumTracksCache.removeAll()
         playlistTracksCache.removeAll()
+        artistAlbumsCache.removeAll()
+        artistTracksCache.removeAll()
         albumsCacheTime = nil
         artistsCacheTime = nil
         playlistsCacheTime = nil
