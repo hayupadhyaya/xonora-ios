@@ -904,6 +904,9 @@ struct PlayerPickerSheet: View {
 struct SleepTimerSheet: View {
     @ObservedObject private var playerManager = PlayerManager.shared
     @Environment(\.dismiss) private var dismiss
+    @State private var showCustomPicker = false
+    @State private var customHours = 0
+    @State private var customMinutes = 30
 
     private let presetOptions: [(label: String, minutes: Int)] = [
         ("15 minutes", 15),
@@ -968,14 +971,90 @@ struct SleepTimerSheet: View {
                     Text("Stop music after")
                 }
 
-                // End of track/queue options
+                // Custom time option
+                Section {
+                    Button {
+                        showCustomPicker = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "clock")
+                            Text("Custom time...")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            if showCustomPicker {
+                                Image(systemName: "chevron.up")
+                                    .foregroundColor(.secondary)
+                            } else {
+                                Image(systemName: "chevron.down")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
+                    if showCustomPicker {
+                        VStack(spacing: 16) {
+                            HStack {
+                                // Hours picker
+                                VStack {
+                                    Text("Hours")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Picker("Hours", selection: $customHours) {
+                                        ForEach(0..<13) { hour in
+                                            Text("\(hour)").tag(hour)
+                                        }
+                                    }
+                                    .pickerStyle(.wheel)
+                                    .frame(width: 80, height: 120)
+                                    .clipped()
+                                }
+
+                                // Minutes picker
+                                VStack {
+                                    Text("Minutes")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Picker("Minutes", selection: $customMinutes) {
+                                        ForEach(Array(stride(from: 0, through: 55, by: 5)), id: \.self) { minute in
+                                            Text("\(minute)").tag(minute)
+                                        }
+                                    }
+                                    .pickerStyle(.wheel)
+                                    .frame(width: 80, height: 120)
+                                    .clipped()
+                                }
+                            }
+
+                            Button {
+                                let totalSeconds = (customHours * 3600) + (customMinutes * 60)
+                                if totalSeconds > 0 {
+                                    playerManager.setSleepTimer(seconds: TimeInterval(totalSeconds))
+                                    dismiss()
+                                }
+                            } label: {
+                                Text("Set Timer")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(Color.accentColor)
+                                    .foregroundColor(.white)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .disabled(customHours == 0 && customMinutes == 0)
+                        }
+                        .padding(.vertical, 8)
+                    }
+                } header: {
+                    Text("Custom")
+                }
+
+                // End of track option
                 Section {
                     Button {
                         // Set timer for remaining duration of current track
                         if playerManager.duration > 0 {
                             let remaining = playerManager.duration - playerManager.currentTime
-                            let minutes = max(1, Int(remaining / 60))
-                            playerManager.setSleepTimer(minutes: minutes)
+                            playerManager.setSleepTimer(seconds: max(60, remaining))
                             dismiss()
                         }
                     } label: {

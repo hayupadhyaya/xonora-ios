@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import MediaPlayer
 import Combine
+import UserNotifications
 
 enum PlaybackState: Equatable {
     case stopped
@@ -36,11 +37,20 @@ class PlayerManager: ObservableObject {
     @Published var currentSource: String?
     @Published var isTransferringPlayback: Bool = false
 
-    // Sleep Timer
-    @Published var sleepTimerEndTime: Date?
+    // Sleep Timer (persisted to survive app backgrounding)
+    @Published var sleepTimerEndTime: Date? {
+        didSet {
+            // Persist to UserDefaults
+            if let endTime = sleepTimerEndTime {
+                UserDefaults.standard.set(endTime, forKey: "sleepTimerEndTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "sleepTimerEndTime")
+            }
+        }
+    }
     @Published var sleepTimerRemaining: TimeInterval = 0
-    private var sleepTimer: Timer?
     private var sleepTimerUpdateTimer: Timer?
+    private static let sleepTimerNotificationId = "xonora.sleepTimer"
 
     private var progressTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
@@ -71,6 +81,26 @@ class PlayerManager: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        // Restore sleep timer from UserDefaults
+        restoreSleepTimer()
+
+        // Observe app lifecycle for sleep timer
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.checkSleepTimerOnForeground()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleSleepTimerNotification()
+        }
     }
     
     private func startProgressTimer() {
@@ -625,43 +655,45 @@ class PlayerManager: ObservableObject {
 
     /// Sets a sleep timer for the specified duration in minutes
     func setSleepTimer(minutes: Int) {
+        setSleepTimer(seconds: TimeInterval(minutes * 60))
+    }
+
+    /// Sets a sleep timer for a custom duration in seconds
+    func setSleepTimer(seconds: TimeInterval) {
         cancelSleepTimer()
 
-        let duration = TimeInterval(minutes * 60)
-        sleepTimerEndTime = Date().addingTimeInterval(duration)
-        sleepTimerRemaining = duration
+        sleepTimerEndTime = Date().addingTimeInterval(seconds)
+        sleepTimerRemaining = seconds
 
+        let minutes = Int(seconds) / 60
         print("[PlayerManager] Sleep timer set for \(minutes) minutes (ends at \(sleepTimerEndTime!))")
 
-        // Main timer that fires when time is up
-        sleepTimer = Timer.scheduledTimer(withTimeInterval: duration, repeats: false) { [weak self] _ in
-            Task { @MainActor in
-                self?.sleepTimerFired()
-            }
-        }
+        // Request notification permission for background timer
+        requestNotificationPermission()
 
-        // Update timer that refreshes the remaining time display every second
-        sleepTimerUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                self?.updateSleepTimerRemaining()
-            }
-        }
+        // Start the UI update timer
+        startSleepTimerUpdateLoop()
     }
 
     /// Cancels the current sleep timer
     func cancelSleepTimer() {
-        sleepTimer?.invalidate()
-        sleepTimer = nil
         sleepTimerUpdateTimer?.invalidate()
         sleepTimerUpdateTimer = nil
         sleepTimerEndTime = nil
         sleepTimerRemaining = 0
+
+        // Cancel any scheduled notification
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [Self.sleepTimerNotificationId]
+        )
+
         print("[PlayerManager] Sleep timer cancelled")
     }
 
     /// Returns true if a sleep timer is currently active
     var isSleepTimerActive: Bool {
-        sleepTimerEndTime != nil && sleepTimerEndTime! > Date()
+        guard let endTime = sleepTimerEndTime else { return false }
+        return endTime > Date()
     }
 
     /// Formatted string for the remaining sleep timer time
@@ -679,6 +711,95 @@ class PlayerManager: ObservableObject {
         }
     }
 
+    /// Restore sleep timer from UserDefaults on app launch
+    private func restoreSleepTimer() {
+        if let savedEndTime = UserDefaults.standard.object(forKey: "sleepTimerEndTime") as? Date {
+            if savedEndTime > Date() {
+                // Timer hasn't expired yet
+                sleepTimerEndTime = savedEndTime
+                sleepTimerRemaining = savedEndTime.timeIntervalSinceNow
+                startSleepTimerUpdateLoop()
+                print("[PlayerManager] Restored sleep timer - \(Int(sleepTimerRemaining / 60)) minutes remaining")
+            } else {
+                // Timer expired while app was closed - fire it now
+                print("[PlayerManager] Sleep timer expired while app was closed - pausing now")
+                UserDefaults.standard.removeObject(forKey: "sleepTimerEndTime")
+                sleepTimerFired()
+            }
+        }
+    }
+
+    /// Check sleep timer when app comes to foreground
+    private func checkSleepTimerOnForeground() {
+        guard let endTime = sleepTimerEndTime else { return }
+
+        if endTime <= Date() {
+            // Timer expired while in background
+            print("[PlayerManager] Sleep timer expired in background - pausing now")
+            sleepTimerFired()
+        } else {
+            // Timer still active, update remaining and restart update loop
+            sleepTimerRemaining = endTime.timeIntervalSinceNow
+            startSleepTimerUpdateLoop()
+        }
+
+        // Cancel notification since we're now in foreground
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [Self.sleepTimerNotificationId]
+        )
+    }
+
+    /// Schedule a notification to fire when timer expires (for background)
+    private func scheduleSleepTimerNotification() {
+        guard let endTime = sleepTimerEndTime, endTime > Date() else { return }
+
+        // Stop the update timer when going to background
+        sleepTimerUpdateTimer?.invalidate()
+        sleepTimerUpdateTimer = nil
+
+        let content = UNMutableNotificationContent()
+        content.title = "Sleep Timer"
+        content.body = "Stopping playback..."
+        content.sound = nil // Silent
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: endTime.timeIntervalSinceNow,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: Self.sleepTimerNotificationId,
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("[PlayerManager] Failed to schedule sleep timer notification: \(error)")
+            } else {
+                print("[PlayerManager] Scheduled background sleep timer notification")
+            }
+        }
+    }
+
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { granted, error in
+            if granted {
+                print("[PlayerManager] Notification permission granted for sleep timer")
+            }
+        }
+    }
+
+    private func startSleepTimerUpdateLoop() {
+        sleepTimerUpdateTimer?.invalidate()
+
+        sleepTimerUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.updateSleepTimerRemaining()
+            }
+        }
+    }
+
     private func updateSleepTimerRemaining() {
         guard let endTime = sleepTimerEndTime else {
             sleepTimerRemaining = 0
@@ -689,14 +810,15 @@ class PlayerManager: ObservableObject {
         if remaining > 0 {
             sleepTimerRemaining = remaining
         } else {
-            sleepTimerRemaining = 0
+            // Timer expired
+            sleepTimerFired()
         }
     }
 
     private func sleepTimerFired() {
         print("[PlayerManager] Sleep timer fired - stopping playback")
 
-        // Stop playback
+        // Stop playback on the server
         Task {
             try? await XonoraClient.shared.pause()
         }
@@ -704,7 +826,6 @@ class PlayerManager: ObservableObject {
         playbackState = .paused
 
         // Clean up timer state
-        sleepTimer = nil
         sleepTimerUpdateTimer?.invalidate()
         sleepTimerUpdateTimer = nil
         sleepTimerEndTime = nil
