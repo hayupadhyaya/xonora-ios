@@ -1,8 +1,46 @@
 import SwiftUI
 import AVFoundation
+import UserNotifications
+
+// MARK: - App Delegate for Notification Handling
+
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Set notification delegate
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    // Handle notification when app is in foreground
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        handleSleepTimerNotification(notification)
+        completionHandler([]) // Don't show the notification
+    }
+
+    // Handle notification when user taps it (app was in background)
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        handleSleepTimerNotification(response.notification)
+        completionHandler()
+    }
+
+    private func handleSleepTimerNotification(_ notification: UNNotification) {
+        if notification.request.identifier == "xonora.sleepTimer" {
+            print("[AppDelegate] Sleep timer notification received - pausing playback")
+            Task { @MainActor in
+                // Pause playback
+                try? await XonoraClient.shared.pause()
+                PlayerManager.shared.playbackState = .paused
+
+                // Clear the timer state
+                PlayerManager.shared.cancelSleepTimer()
+            }
+        }
+    }
+}
 
 @main
 struct XonoraApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var playerViewModel = PlayerViewModel()
     @StateObject private var libraryViewModel = LibraryViewModel()
     @Environment(\.scenePhase) private var scenePhase

@@ -21,10 +21,13 @@ struct PlaylistGridItem: View {
                     .lineLimit(1)
                     .foregroundColor(.primary)
 
-                Text("Playlist")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                HStack(spacing: 4) {
+                    ProviderIcon(provider: playlist.sourceProvider, size: 12)
+                    Text("Playlist")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
             }
         }
     }

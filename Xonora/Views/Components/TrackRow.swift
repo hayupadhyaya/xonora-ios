@@ -91,10 +91,13 @@ struct TrackRow: View {
                         .foregroundColor(isPlaying ? .accentColor : .primary)
                         .lineLimit(1)
 
-                    Text(track.artistNames)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+                    HStack(spacing: 4) {
+                        ProviderIcon(provider: track.sourceProvider, size: 12)
+                        Text(track.artistNames)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
                 }
 
                 Spacer()
@@ -149,7 +152,33 @@ struct TrackRow: View {
                     } label: {
                         Label("Add to Queue", systemImage: "text.badge.plus")
                     }
-                    
+
+                    Divider()
+
+                    // Play on specific player
+                    if !XonoraClient.shared.players.filter({ $0.available }).isEmpty {
+                        Menu {
+                            ForEach(XonoraClient.shared.players.filter { $0.available }) { player in
+                                Button {
+                                    print("[TrackRow] Playing '\(track.name)' on player: \(player.name) (id: \(player.playerId))")
+                                    XonoraClient.shared.userSelectedPlayer = true
+                                    XonoraClient.shared.currentPlayer = player
+                                    PlayerManager.shared.playTrack(track)
+                                } label: {
+                                    HStack {
+                                        Image(systemName: player.provider == "sendspin" ? "iphone" : "speaker.wave.2")
+                                        Text(player.name)
+                                        if player.playerId == XonoraClient.shared.currentPlayer?.playerId {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Label("Play on...", systemImage: "airplayaudio")
+                        }
+                    }
+
                     if track.provider != "library" {
                         Button {
                             Task {
@@ -170,6 +199,74 @@ struct TrackRow: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            Button {
+                PlayerManager.shared.playTrack(track)
+            } label: {
+                Label("Play", systemImage: "play")
+            }
+
+            Button {
+                PlayerManager.shared.playNext(track)
+            } label: {
+                Label("Play Next", systemImage: "text.line.first.and.arrowtriangle.forward")
+            }
+
+            Button {
+                PlayerManager.shared.addToQueue(track)
+            } label: {
+                Label("Add to Queue", systemImage: "text.badge.plus")
+            }
+
+            Divider()
+
+            // Play on specific player submenu
+            if !XonoraClient.shared.players.filter({ $0.available }).isEmpty {
+                Menu {
+                    ForEach(XonoraClient.shared.players.filter { $0.available }) { player in
+                        Button {
+                            print("[TrackRow] Context menu: Playing '\(track.name)' on player: \(player.name) (id: \(player.playerId))")
+                            XonoraClient.shared.userSelectedPlayer = true
+                            XonoraClient.shared.currentPlayer = player
+                            PlayerManager.shared.playTrack(track)
+                        } label: {
+                            HStack {
+                                Image(systemName: player.provider == "sendspin" ? "iphone" : "speaker.wave.2")
+                                Text(player.name)
+                                if player.playerId == XonoraClient.shared.currentPlayer?.playerId {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Label("Play on...", systemImage: "airplayaudio")
+                }
+            }
+
+            Divider()
+
+            Button {
+                Task {
+                    await libraryViewModel.toggleFavorite(item: track)
+                }
+            } label: {
+                Label(
+                    (track.favorite ?? false) ? "Remove from Favorites" : "Add to Favorites",
+                    systemImage: (track.favorite ?? false) ? "heart.slash" : "heart"
+                )
+            }
+
+            if track.provider != "library" {
+                Button {
+                    Task {
+                        try? await XonoraClient.shared.addToLibrary(itemId: track.itemId, provider: track.provider)
+                    }
+                } label: {
+                    Label("Add to Library", systemImage: "plus.circle")
+                }
+            }
+        }
     }
 }
 
