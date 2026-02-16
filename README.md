@@ -8,7 +8,7 @@ Xonora is a high-performance, native iOS and Apple Watch client for [Music Assis
 
 ## Beta Testing
 
-Xonora is currently in open alpha. Join the public TestFlight to help test the app:
+Xonora is currently in open beta. Join the public TestFlight to help test the app:
 
 **[Join the Xonora TestFlight](https://testflight.apple.com/join/5rUk1uqN)**
 
