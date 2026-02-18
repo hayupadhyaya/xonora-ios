@@ -152,16 +152,32 @@ struct PlayerControls: View {
                 }
                 
                 // Playback Destination
-                if let playerName = xonoraClient.currentPlayer?.name {
-                    Button {
-                        // TODO: Show player picker?
+                if !xonoraClient.players.filter({ $0.available }).isEmpty {
+                    Menu {
+                        ForEach(xonoraClient.players.filter { $0.available }) { player in
+                            Button {
+                                print("[PlayerControls] User selected player: \(player.name) (id: \(player.playerId))")
+                                // Use transferPlayback to properly switch players and continue playback
+                                playerManager.transferPlayback(to: player, resumePlayback: true)
+                            } label: {
+                                HStack {
+                                    Image(systemName: player.provider == "sendspin" ? "iphone" : "speaker.wave.2")
+                                    Text(player.name)
+                                    if player.playerId == xonoraClient.currentPlayer?.playerId {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: isLocalPlayer ? "iphone" : "speaker.wave.2.fill")
                                 .font(.caption)
-                            Text(playerName)
+                            Text(xonoraClient.currentPlayer?.name ?? "Select Player")
                                 .font(.caption)
                                 .fontWeight(.medium)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.caption2)
                         }
                         .foregroundColor(.accentColor)
                         .padding(.horizontal, 12)
@@ -169,7 +185,10 @@ struct PlayerControls: View {
                         .background(Color.accentColor.opacity(0.15))
                         .clipShape(Capsule())
                     }
-                    .buttonStyle(.plain)
+                } else if xonoraClient.connectionState == .connected {
+                    Text("No players available")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
         }
