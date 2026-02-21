@@ -1,6 +1,6 @@
-# Xonora: Music Assistant Player for iOS & watchOS
+# Xonora: Music Assistant Player for iOS, watchOS & CarPlay
 
-Xonora is a high-performance, native iOS and Apple Watch client for [Music Assistant](https://music-assistant.io/). Built with SwiftUI and the custom **SendspinKit** audio engine, it delivers gapless, synchronized, and high-fidelity playback from your self-hosted server directly to your devices.
+Xonora is a high-performance, native client for [Music Assistant](https://music-assistant.io/) running on iPhone, Apple Watch, and CarPlay. Built with SwiftUI and the custom **SendspinKit** audio engine, it delivers gapless, synchronized, and high-fidelity playback from your self-hosted server directly to your devices.
 
 ## Join the Community
 
@@ -8,64 +8,72 @@ Xonora is a high-performance, native iOS and Apple Watch client for [Music Assis
 
 ## Beta Testing
 
-Xonora is currently in open beta. Join the public TestFlight to help test the app:
+Xonora is currently in open alpha. Join the public TestFlight to help test the app:
 
 **[Join the Xonora TestFlight](https://testflight.apple.com/join/5rUk1uqN)**
 
 > **Note:** Due to Apple's review process, new updates and builds may be delayed for up to **48 hours** before becoming available in TestFlight.
 
-## What's New in v1.0.6
+## What's New in v1.0.7
 
-### Apple Watch Companion App
-- **Full WatchConnectivity Integration**: Control playback, browse library, and switch players from your wrist
-- **Now Playing**: Track info, artwork, and playback controls
-- **Library Access**: Browse albums, artists, and playlists
-- **Multi-Device Manager**: View and switch between all available players
-- **Real-time Sync**: Instant updates via iPhone relay with 4/sec throttling
+### CarPlay — Major Overhaul
 
-### Multi-Player Management
-- **Seamless Player Transfer**: Switch between players with automatic position restoration
-- **Enhanced Player Controls**: Inline menu showing all available players with active indicator
-- **"Play on..." Context Menu**: Quick player selection directly from track rows
-- **Toast Notifications**: Visual feedback when switching players
-- **State Protection**: Robust queue event filtering prevents corruption when multiple players are active
+The CarPlay experience has been rebuilt from the ground up. This is the centerpiece of v1.0.7
 
-### Content & Discovery
-- **Podcasts**: Full support with dedicated view, grid layout, and chapter navigation
-- **Radio Stations**: Browse and play internet radio streams
-- **Provider Branding**: Visual identification of streaming services (Spotify, Apple Music, Tidal, Qobuz, etc.) with colored icons throughout the app
-- **Enhanced Search**: Universal search with filter chips (All, Songs, Albums, Artists, Playlists, Audiobooks, Podcasts, Radio)
-- **Recently Played**: Server-side recently played items on Home screen
+- **Tab Bar Navigation**: Dedicated Home, Library, Queue, and Now Playing tabs
+- **Home Tab**: Horizontal scrolling artwork rows for Continue Listening, Recently Played, and Recommendations — synced with your iOS home screen
+- **Library Drill-Down**: Browse Artists -> Albums -> Tracks directly from the dashboard
+- **Queue Tab**: Live queue with current-track indicator; tap any item to jump playback
+- **Now Playing Favorites**: Heart tracks directly from the CarPlay Now Playing screen
+- **Siri Integration**: "Hey Siri, play..." media intent support (Will not play anything yetTo Do)
+- **Template & Image Caching**: Album and playlist track templates cached in memory — no artwork reload on back/re-enter. Disk-cached 240x240 resized images for smooth scrolling (Super slow on initial load)
+- **Performance**: Debounced home rebuilds (300ms) to prevent UI freezes; stable reconnect behavior with persistent cancellables
 
-### Playback & Audio
-- **Consolidated Sleep Timer**: Integrated sleep timer (5/15/30/45/60 min) with background notifications and persistence
-- **Improved Reliability**: Proactive reconnection (up to 5 retries), lock screen stability, keep-alive logic
-- **Enhanced Error Handling**: Graceful playback failure recovery, better state synchronization
-- **Interruption Handling**: Automatic resume after phone calls and other audio interruptions
+### Authentication — Username & Password
 
-### User Experience
-- **Customization**: Appearance settings (tint color, dark/light mode), customize Home sections, reorder/hide tabs
-- **Marquee Text**: Auto-scrolling for long track titles in player
-- **Lyrics Engine**: Dual-layer cache (memory + disk) with adjustable offset for sync correction
-- **Playback History**: Persistent "Recently Played" and "Continue Listening" sections
+Gone are the days of hunting for access tokens, copying them from browser dev tools, and praying you didn't accidentally grab an expired one. Xonora now supports proper **username and password login** as the default authentication method. Credentials are stored securely in the Keychain. Token auth is still available as a fallback for the nostalgic.
 
-### Under the Hood
-- **Critical Bug Fixes**: Player state decoding, playlist favorites, queue synchronization
-- **Performance Improvements**: Lazy metadata loading, memory leak fixes, optimized image caching
-- **Architecture Refinements**: Removed standalone SleepTimerManager, enhanced XonoraClient with new API methods
-- **AppDelegate Integration**: Proper notification handling for sleep timer and background events
+- **Server Setup**: New toggle between Username/Password and Token auth modes
+- **Keychain Storage**: Credentials stored securely via `KeychainHelper`
+- **User & Provider Info**: Settings page now shows your logged-in user and connected providers
+
+### Library Sort & View Modes
+
+- **Sort Options**: Sort any library section by name (A-Z, Z-A) or date added (newest/oldest)
+- **View Mode Toggle**: Switch between grid and list view per category
+- **Grid Column Customization**: Configurable column counts for portrait and landscape, with separate settings per category — moved to Settings > Personalization
+- **Device-Aware Layouts**: Accurate iPhone vs iPad detection for proper column defaults (Still no officail iPad support, only tested on my Mac as an iPad app)
+
+### Audio & Lyrics
+
+- **Hardware-Anchored Lyrics**: Lyrics timing now syncs automatically with the hardware audio clock — is it is out of sync pause and resume to fix it
+- **Playback Drift Fix**: Eliminated time drift by using hardware engine time for both `currentTime` and `audioSyncedTime`
+- **Larger Audio Buffer**: Increased from ~4.8s to ~30s
+- **Volume Debounce**: Single command on slider release prevents Cast device (Nest Hub) volume fluctuations (Needs to be verified)
+
+### watchOS Fixes
+
+- **Player Switch**: Clearing stale state before restoring on player switch
+- **Interactive Player Pill**: Tappable player indicator navigates to device switcher
+
+### Other
+
+- **Large Library Pagination**: Count-based pagination with concurrent category loading for libraries exceeding API limits (Needs to be verified)
+- **Response Format Handling**: Graceful parsing of multiple JSON response structures from the server
 
 ## Core Features
 
 ### Audio Streaming
+
 - **Sendspin Protocol**: Lossless PCM/FLAC audio streaming with dynamic buffering
 - **Gapless Playback**: Seamless transitions between tracks
 - **Hardware Acceleration**: vDSP/SIMD audio processing with Accelerate framework
 - **Background Audio**: Continuous playback with lock screen controls
 - **Remote Controls**: Lock screen, Control Center, and Bluetooth hardware button support
-- **CarPlay**: Full library browsing and Now Playing screen
+- **CarPlay**: Full tab bar with Home, Library, Queue, and Now Playing; drill-down browsing, template caching, Siri intent
 
 ### Library & Content
+
 - **Music**: Albums, Artists, Tracks, Playlists with full browsing and search
 - **Audiobooks**: Dedicated view with chapter support and playback controls
 - **Podcasts**: Browse episodes with grid layout
@@ -74,48 +82,62 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 - **Add to Library**: Search and add content from streaming services
 
 ### Metadata & Caching
+
 - **Local Metadata Cache**: Disk-backed cache with 1-hour expiry for instant library loads
 - **Image Cache**: In-memory caching with size-aware URLs for optimal performance
 - **Intelligent Artwork**: Seamless handling of local (Plex/SMB) and CDN (Apple Music, TheAudioDB) images
 
 ### Server Integration
+
 - **mDNS Discovery**: Automatic local network scanning for Music Assistant servers
-- **Access Token Auth**: Secure authentication (Schema 28+)
+- **Username/Password Auth**: Secure login with Keychain storage (token fallback available)
 - **WebSocket Protocol**: Efficient real-time communication with Music Assistant API
 - **Event-Driven Updates**: Real-time sync of library changes, queue updates, and player states
 
 ## Completed Features from Development Plan
 
 ### Phase 1: Core Library Enhancements ✅
+
 - ✅ **Playlists Support**: Full browsing and playback
 - ✅ **Favorites (Hearting)**: Toggle favorites for tracks, albums, artists, playlists, audiobooks
 - ✅ **Radio Integration**: Browse and play radio stations
 
 ### Phase 2: Player & Queue Improvements 🟡
+
 - ✅ **Player Transfer**: Seamless switching with position restoration
 - ✅ **Advanced Queue**: Drag-to-reorder, swipe-to-delete, "Play Next" and "Add to Queue" context menus
 - ⏳ **Player Grouping**: (Partially implemented) Improvements in future releases
 
 ### Phase 3: Content & Sync ✅
+
 - ✅ **Podcasts**: Dedicated view with full support
 - ✅ **Real-time Sync**: Event-driven library and queue updates
 - ✅ **Enhanced Search**: Multi-type search with filtering
 
 ### Phase 4: UI/UX Polish 🟡
+
 - ✅ **Customization**: Appearance settings, Home customization, Tab reordering
 - ✅ **Provider Branding**: Service-specific icons and colors
 - ✅ **Toast Notifications**: System-wide toast manager
-- ⏳ **Adaptive Theming**: Album art color extraction (planned)
+- ✅ **Library Sort & View Modes**: Sort options, list/grid toggle, column count customization
+- ✅ **Adaptive Theming**: Album art color extraction (planned)
 - ⏳ **Letter Scrollbar**: Fast navigation (planned)
+
+### Phase 5: Platform Expansion ✅
+
+- ✅ **Apple Watch**: Full WatchConnectivity companion app
+- ✅ **CarPlay**: Tab bar with Home/Library/Queue, artwork, drill-down browsing, Siri intent, template caching
 
 ## Requirements
 
 ### iOS App
+
 - **iOS**: 17.0 or later
 - **Music Assistant Server**: Version 2.0 (Schema 28) or later
 - **Sendspin**: The Sendspin player provider must be enabled on your server
 
 ### Apple Watch App
+
 - **watchOS**: 10.0 or later
 - **iPhone**: Must be running Xonora iOS app for WatchConnectivity relay
 - **Network**: Watch uses iPhone as relay (WiFi/cellular not required on Watch)
@@ -123,11 +145,13 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 ## Architecture
 
 ### Design Pattern
+
 - **MVVM**: Strict separation between views, view models, and data models
 - **SwiftUI**: Modern declarative UI framework
 - **Combine**: Reactive data flow for state management
 
 ### Key Components
+
 - **SendspinKit**: Standalone Swift Package for Sendspin protocol and audio engine
   - WebSocket transport layer
   - AVAudioEngine-based playback
@@ -140,14 +164,27 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 - **WatchSessionManager**: WatchConnectivity bridge between iOS and watchOS
 
 ### Service Layer
+
 - **MultiDeviceManager**: Tracks state for all Music Assistant players
 - **PlaybackHistoryManager**: Persistent playback history
 - **LibraryViewModel**: Global library data access
-- **CarPlaySceneDelegate**: CarPlay integration
+- **CarPlaySceneDelegate**: CarPlay integration with tab bar, cached templates, and image caching
 
 ## Release History
 
-### Version 1.0.6 (Current)
+### Version 1.0.7 (Current)
+
+- CarPlay rebuilt: tab bar with Home/Library/Queue/Now Playing, drill-down browsing, template caching, performance fixes
+- Username/password authentication with Keychain storage (token fallback)
+- Library sort options and grid/list view toggle per category
+- Hardware-anchored lyrics timing and playback drift fix
+- Larger audio buffer (~30s) for stutter-free playback
+- Queue: swipe-to-delete
+- watchOS album views with full-screen artwork
+- Large library pagination support
+
+### Version 1.0.6
+
 - Apple Watch companion app
 - Multi-player management with seamless transfer
 - Podcasts and Radio support
@@ -155,8 +192,10 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 - Consolidated sleep timer
 - Enhanced search with filters
 - Critical bug fixes and performance improvements
+- Updated app icon
 
 ### Version 1.0.5
+
 - mDNS Discovery for automatic server scanning
 - Hardware volume control
 - Artist navigation fixes
@@ -166,6 +205,7 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 - Background library decoding
 
 ### Version 1.0.4
+
 - TabView categories for library
 - Persistent mini player
 - Auto-player selection
@@ -174,6 +214,7 @@ Xonora is currently in open beta. Join the public TestFlight to help test the ap
 - Stability improvements
 
 ### Version 1.0.3
+
 - Songs tab
 - Track management
 - Metadata caching
