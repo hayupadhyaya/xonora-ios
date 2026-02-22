@@ -5,6 +5,9 @@ struct ContentView: View {
     @EnvironmentObject var libraryViewModel: LibraryViewModel
     @State private var selectedTab = 0
     @State private var isPlayerExpanded = false
+    @State private var showPlayerSwitchToast = false
+    @State private var switchedPlayerName = ""
+    @State private var switchedPlayerProvider = ""
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -21,15 +24,21 @@ struct ContentView: View {
                     }
                     .tag(1)
 
+                QueueTabView()
+                    .tabItem {
+                        Label("Queue", systemImage: "list.bullet")
+                    }
+                    .tag(2)
+
                 SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gear")
                     }
-                    .tag(2)
+                    .tag(3)
             }
 
-            // Mini Player Overlay - positioned above system tab bar
-            if playerViewModel.hasTrack && !isPlayerExpanded && selectedTab != 2 {
+            // Mini Player Overlay - positioned above system tab bar (hide on Settings tab)
+            if playerViewModel.hasTrack && !isPlayerExpanded && selectedTab != 3 {
                 MiniPlayerView {
                     withAnimation {
                         isPlayerExpanded = true
@@ -45,6 +54,32 @@ struct ContentView: View {
         }
         .fullScreenCover(isPresented: $isPlayerExpanded) {
             NowPlayingView(isPresentedModally: true)
+        }
+        .overlay(alignment: .top) {
+            if showPlayerSwitchToast {
+                ToastView(
+                    message: "Now playing on \(switchedPlayerName)",
+                    icon: switchedPlayerProvider == "sendspin" ? "iphone" : "speaker.wave.2.fill"
+                )
+                .padding(.top, 60)
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .zIndex(100)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .playerChanged)) { notification in
+            if let name = notification.userInfo?["playerName"] as? String {
+                switchedPlayerName = name
+                switchedPlayerProvider = notification.userInfo?["provider"] as? String ?? ""
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    showPlayerSwitchToast = true
+                }
+                // Auto-hide after 2 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        showPlayerSwitchToast = false
+                    }
+                }
+            }
         }
         .onAppear {
             if playerViewModel.serverURL.isEmpty {
@@ -443,24 +478,45 @@ struct ServerSetupView: View {
     }
 }
 
+enum SearchFilter: String, CaseIterable {
+    case all = "All"
+    case tracks = "Songs"
+    case artists = "Artists"
+    case albums = "Albums"
+    case playlists = "Playlists"
+}
+
 struct SearchView: View {
     @EnvironmentObject var libraryViewModel: LibraryViewModel
     @EnvironmentObject var playerViewModel: PlayerViewModel
+    @State private var selectedFilter: SearchFilter = .all
+
+    private var hasResults: Bool {
+        !libraryViewModel.searchResults.albums.isEmpty ||
+        !libraryViewModel.searchResults.artists.isEmpty ||
+        !libraryViewModel.searchResults.tracks.isEmpty ||
+        !libraryViewModel.searchResults.playlists.isEmpty
+    }
 
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 0) {
+                // Filter chips - only show when there's a query
+                if !libraryViewModel.searchQuery.isEmpty {
+                    filterChips
+                }
+
                 if libraryViewModel.searchQuery.isEmpty {
                     ContentUnavailableView(
                         "Search Music",
                         systemImage: "magnifyingglass",
-                        description: Text("Search for albums, artists, and tracks")
+                        description: Text("Search for albums, artists, songs, and playlists")
                     )
                 } else if libraryViewModel.isSearching {
+                    Spacer()
                     ProgressView()
-                } else if libraryViewModel.searchResults.albums.isEmpty &&
-                          libraryViewModel.searchResults.artists.isEmpty &&
-                          libraryViewModel.searchResults.tracks.isEmpty {
+                    Spacer()
+                } else if !hasResults {
                     ContentUnavailableView.search(text: libraryViewModel.searchQuery)
                 } else {
                     searchResultsList
@@ -468,14 +524,32 @@ struct SearchView: View {
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $libraryViewModel.searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "Albums, Artists, Songs")
+            .searchable(text: $libraryViewModel.searchQuery, placement: .navigationBarDrawer(displayMode: .always), prompt: "Albums, Artists, Songs, Playlists")
         }
         .ignoresSafeArea(.container, edges: .bottom)
     }
 
+    private var filterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(SearchFilter.allCases, id: \.self) { filter in
+                    FilterChip(title: filter.rawValue, isSelected: selectedFilter == filter) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedFilter = filter
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+        }
+        .background(Color(UIColor.systemBackground))
+    }
+
     private var searchResultsList: some View {
         List {
-            if !libraryViewModel.searchResults.tracks.isEmpty {
+            // Songs section
+            if (selectedFilter == .all || selectedFilter == .tracks) && !libraryViewModel.searchResults.tracks.isEmpty {
                 Section("Songs") {
                     ForEach(libraryViewModel.searchResults.tracks) { track in
                         TrackRow(
@@ -490,7 +564,8 @@ struct SearchView: View {
                 }
             }
 
-            if !libraryViewModel.searchResults.albums.isEmpty {
+            // Albums section
+            if (selectedFilter == .all || selectedFilter == .albums) && !libraryViewModel.searchResults.albums.isEmpty {
                 Section("Albums") {
                     ForEach(libraryViewModel.searchResults.albums) { album in
                         NavigationLink(destination: AlbumDetailView(album: album)) {
@@ -524,7 +599,8 @@ struct SearchView: View {
                 }
             }
 
-            if !libraryViewModel.searchResults.artists.isEmpty {
+            // Artists section
+            if (selectedFilter == .all || selectedFilter == .artists) && !libraryViewModel.searchResults.artists.isEmpty {
                 Section("Artists") {
                     ForEach(libraryViewModel.searchResults.artists) { artist in
                         HStack(spacing: 12) {
@@ -537,6 +613,43 @@ struct SearchView: View {
                                 }
 
                             Text(artist.name)
+                        }
+                    }
+                }
+            }
+
+            // Playlists section
+            if (selectedFilter == .all || selectedFilter == .playlists) && !libraryViewModel.searchResults.playlists.isEmpty {
+                Section("Playlists") {
+                    ForEach(libraryViewModel.searchResults.playlists) { playlist in
+                        NavigationLink(destination: PlaylistDetailView(playlist: playlist)) {
+                            HStack(spacing: 12) {
+                                AsyncImage(url: XonoraClient.shared.getImageURL(for: playlist.imageUrl)) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                } placeholder: {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .overlay {
+                                            Image(systemName: "music.note.list")
+                                                .foregroundColor(.gray)
+                                        }
+                                }
+                                .frame(width: 50, height: 50)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+
+                                VStack(alignment: .leading) {
+                                    Text(playlist.name)
+                                        .lineLimit(1)
+                                    if let owner = playlist.owner {
+                                        Text(owner)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
+                            }
                         }
                     }
                 }

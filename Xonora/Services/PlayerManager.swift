@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import MediaPlayer
 import Combine
+import UserNotifications
 
 enum PlaybackState: Equatable {
     case stopped
@@ -34,6 +35,22 @@ class PlayerManager: ObservableObject {
     @Published var repeatMode: RepeatMode = .off
     @Published var volume: Float = 1.0
     @Published var currentSource: String?
+    @Published var isTransferringPlayback: Bool = false
+
+    // Sleep Timer (persisted to survive app backgrounding)
+    @Published var sleepTimerEndTime: Date? {
+        didSet {
+            // Persist to UserDefaults
+            if let endTime = sleepTimerEndTime {
+                UserDefaults.standard.set(endTime, forKey: "sleepTimerEndTime")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "sleepTimerEndTime")
+            }
+        }
+    }
+    @Published var sleepTimerRemaining: TimeInterval = 0
+    private var sleepTimerUpdateTimer: Timer?
+    private static let sleepTimerNotificationId = "xonora.sleepTimer"
 
     private var progressTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
@@ -64,6 +81,26 @@ class PlayerManager: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        // Restore sleep timer from UserDefaults
+        restoreSleepTimer()
+
+        // Observe app lifecycle for sleep timer
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.checkSleepTimerOnForeground()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleSleepTimerNotification()
+        }
     }
     
     private func startProgressTimer() {
@@ -161,6 +198,17 @@ class PlayerManager: ObservableObject {
             .sink { [weak self] notification in
                 guard let self = self, let userInfo = notification.userInfo else { return }
 
+                // Ignore events during player transfer to prevent state thrashing
+                if self.isTransferringPlayback {
+                    print("[PlayerManager] Ignoring queue event during player transfer")
+                    // Still update duration if available
+                    if let currentItem = userInfo["current_item"] as? [String: Any],
+                       let duration = currentItem["duration"] as? Int {
+                        self.duration = TimeInterval(duration)
+                    }
+                    return
+                }
+
                 // Ignore events during user-initiated play to prevent race conditions
                 if self.isUserInitiatedPlay {
                     // Still update duration if available
@@ -176,6 +224,7 @@ class PlayerManager: ObservableObject {
                 }
 
                 if let stateStr = userInfo["state"] as? String {
+                    print("[PlayerManager] Queue event - state: '\(stateStr)', current playbackState: \(self.playbackState)")
                     if stateStr == "playing" {
                         self.playbackState = .playing
                         self.startProgressTimer()
@@ -189,8 +238,11 @@ class PlayerManager: ObservableObject {
                         if self.playbackState == .playing {
                             self.handleTrackEnded()
                             SendspinClient.shared.stopPlayback()
+                        } else {
+                            print("[PlayerManager] Ignoring idle state (not currently playing, state was: \(self.playbackState))")
                         }
                     } else {
+                        print("[PlayerManager] Unknown state '\(stateStr)', stopping playback")
                         self.playbackState = .stopped
                         self.stopProgressTimer()
                         SendspinClient.shared.stopPlayback()
@@ -254,11 +306,13 @@ class PlayerManager: ObservableObject {
         self.currentSource = sourceName
 
         guard SendspinClient.shared.isConnected else {
+            print("[PlayerManager] ERROR: Sendspin not connected")
             playbackState = .error("Sendspin not connected. Please enable it in Settings.")
             return
         }
 
-        print("[PlayerManager] Playing: \(track.name)")
+        let targetPlayer = XonoraClient.shared.currentPlayer
+        print("[PlayerManager] Playing: '\(track.name)' on player: '\(targetPlayer?.name ?? "NONE")' (id: \(targetPlayer?.playerId ?? "nil"))")
 
         // Force Shuffle OFF for direct track selection to ensure the selected track plays
         self.shuffleEnabled = false
@@ -294,10 +348,13 @@ class PlayerManager: ObservableObject {
             await self.updateNowPlayingInfoAsync()
         }
 
-        // Prepare URIs to play (current track + subsequent queue items)
+        // Prepare URIs to play (current track + limited upcoming items)
+        // Limit to 20 tracks to avoid sending huge payloads - server handles queue advancement
+        let maxTracksToSend = 20
         let uris: [String]
         if !queue.isEmpty && currentIndex < queue.count {
-            uris = Array(queue[currentIndex..<queue.count]).map { $0.uri }
+            let endIndex = min(currentIndex + maxTracksToSend, queue.count)
+            uris = Array(queue[currentIndex..<endIndex]).map { $0.uri }
         } else {
             uris = [track.uri]
         }
@@ -442,15 +499,129 @@ class PlayerManager: ObservableObject {
     func cycleRepeatMode() {
         let nextRaw = (repeatMode.rawValue + 1) % 3
         repeatMode = RepeatMode(rawValue: nextRaw) ?? .off
-        
+
         let modeString: String
         switch repeatMode {
         case .off: modeString = "off"
         case .all: modeString = "all"
         case .one: modeString = "one"
         }
-        
+
         Task { try? await XonoraClient.shared.setRepeat(mode: modeString) }
+    }
+
+    /// Transfer current playback to a different player
+    /// - Parameter player: The new player to transfer playback to
+    /// - Parameter resumePlayback: If true and something is playing, restart playback on new player
+    func transferPlayback(to player: MAPlayer, resumePlayback: Bool = true) {
+        let oldPlayer = XonoraClient.shared.currentPlayer
+        let wasPlaying = isPlaying
+        let savedTrack = currentTrack
+        let savedPosition = currentTime
+        let savedQueue = queue
+        let savedIndex = currentIndex
+        let savedSource = currentSource
+
+        // Set transfer flag to ignore state changes during switch
+        isTransferringPlayback = true
+
+        print("[PlayerManager] Transferring playback: '\(oldPlayer?.name ?? "none")' -> '\(player.name)'")
+        print("[PlayerManager]   - Was playing: \(wasPlaying)")
+        print("[PlayerManager]   - Current track: \(savedTrack?.name ?? "none")")
+        print("[PlayerManager]   - Position: \(savedPosition)s")
+        print("[PlayerManager]   - Queue size: \(savedQueue.count)")
+
+        // Mark as user-selected to prevent auto-selection from overriding
+        XonoraClient.shared.userSelectedPlayer = true
+
+        // Switch to new player
+        XonoraClient.shared.currentPlayer = player
+
+        // If there's a current track and we want to resume, restart playback on new player
+        // Transfer even if paused/stopped, as long as there's a track to play
+        if resumePlayback, let track = savedTrack {
+            print("[PlayerManager] Resuming playback of '\(track.name)' on '\(player.name)' (was playing: \(wasPlaying))")
+
+            // Restore queue state
+            queue = savedQueue
+            currentIndex = savedIndex
+            currentSource = savedSource
+
+            // Play the track on the new player
+            playTrack(track, fromQueue: savedQueue, sourceName: savedSource)
+
+            // Seek to the saved position after a short delay to let playback start
+            // Only seek if we had meaningful progress (more than 2 seconds)
+            if savedPosition > 2 {
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+                    await MainActor.run {
+                        if self.currentTrack?.uri == track.uri {
+                            print("[PlayerManager] Seeking to saved position: \(savedPosition)s")
+                            self.seek(to: savedPosition)
+                        }
+                    }
+                }
+            }
+        } else {
+            print("[PlayerManager] Player switched (no local playback to transfer)")
+
+            // Fetch the queue from the new player if it has content
+            Task {
+                await fetchQueueFromServer(for: player)
+            }
+        }
+
+        // Clear transfer flag after delay to allow server to stabilize
+        Task {
+            try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+            await MainActor.run { self.isTransferringPlayback = false }
+        }
+    }
+
+    /// Fetches the queue from the server for a specific player
+    func fetchQueueFromServer(for player: MAPlayer) async {
+        print("[PlayerManager] Fetching queue from server for '\(player.name)'")
+
+        do {
+            // Fetch queue items
+            let tracks = try await XonoraClient.shared.fetchQueueItems(for: player.playerId)
+
+            // Fetch queue state (current index, elapsed time)
+            let state = try await XonoraClient.shared.fetchQueueState(for: player.playerId)
+
+            await MainActor.run {
+                if tracks.isEmpty {
+                    print("[PlayerManager] Server queue is empty")
+                    // Still update from player's currentMedia if available
+                    if let media = player.currentMedia, let title = media.title {
+                        print("[PlayerManager] Player has currentMedia: '\(title)'")
+                    }
+                } else {
+                    print("[PlayerManager] Loaded \(tracks.count) tracks from server queue")
+                    self.queue = tracks
+                    self.currentIndex = min(state.currentIndex, tracks.count - 1)
+                    self.currentTime = state.elapsedTime
+
+                    // Set current track from queue
+                    if self.currentIndex < tracks.count {
+                        self.currentTrack = tracks[self.currentIndex]
+                    }
+
+                    // Update playback state based on server state
+                    switch state.state {
+                    case "playing":
+                        self.playbackState = .playing
+                    case "paused":
+                        self.playbackState = .paused
+                    default:
+                        self.playbackState = .stopped
+                    }
+                }
+            }
+        } catch {
+            print("[PlayerManager] Failed to fetch queue: \(error)")
+        }
     }
 
     // MARK: - Queue Management
@@ -478,6 +649,210 @@ class PlayerManager: ObservableObject {
         queue = tracks
         currentIndex = index
         playTrack(tracks[index], fromQueue: tracks, sourceName: albumName)
+    }
+
+    // MARK: - Sleep Timer
+
+    /// Sets a sleep timer for the specified duration in minutes
+    func setSleepTimer(minutes: Int) {
+        setSleepTimer(seconds: TimeInterval(minutes * 60))
+    }
+
+    /// Sets a sleep timer for a custom duration in seconds
+    func setSleepTimer(seconds: TimeInterval) {
+        cancelSleepTimer()
+
+        sleepTimerEndTime = Date().addingTimeInterval(seconds)
+        sleepTimerRemaining = seconds
+
+        let minutes = Int(seconds) / 60
+        print("[PlayerManager] Sleep timer set for \(minutes) minutes (ends at \(sleepTimerEndTime!))")
+
+        // Request notification permission for background timer
+        requestNotificationPermission()
+
+        // Start the UI update timer
+        startSleepTimerUpdateLoop()
+    }
+
+    /// Cancels the current sleep timer
+    func cancelSleepTimer() {
+        sleepTimerUpdateTimer?.invalidate()
+        sleepTimerUpdateTimer = nil
+        sleepTimerEndTime = nil
+        sleepTimerRemaining = 0
+
+        // Cancel any scheduled notification
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [Self.sleepTimerNotificationId]
+        )
+
+        print("[PlayerManager] Sleep timer cancelled")
+    }
+
+    /// Returns true if a sleep timer is currently active
+    var isSleepTimerActive: Bool {
+        guard let endTime = sleepTimerEndTime else { return false }
+        return endTime > Date()
+    }
+
+    /// Formatted string for the remaining sleep timer time
+    var sleepTimerRemainingFormatted: String {
+        guard sleepTimerRemaining > 0 else { return "" }
+
+        let hours = Int(sleepTimerRemaining) / 3600
+        let minutes = (Int(sleepTimerRemaining) % 3600) / 60
+        let seconds = Int(sleepTimerRemaining) % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%d:%02d", minutes, seconds)
+        }
+    }
+
+    /// Restore sleep timer from UserDefaults on app launch
+    private func restoreSleepTimer() {
+        if let savedEndTime = UserDefaults.standard.object(forKey: "sleepTimerEndTime") as? Date {
+            if savedEndTime > Date() {
+                // Timer hasn't expired yet
+                sleepTimerEndTime = savedEndTime
+                sleepTimerRemaining = savedEndTime.timeIntervalSinceNow
+                startSleepTimerUpdateLoop()
+                print("[PlayerManager] Restored sleep timer - \(Int(sleepTimerRemaining / 60)) minutes remaining")
+            } else {
+                // Timer expired while app was closed - fire it now
+                print("[PlayerManager] Sleep timer expired while app was closed - pausing now")
+                UserDefaults.standard.removeObject(forKey: "sleepTimerEndTime")
+                sleepTimerFired()
+            }
+        }
+    }
+
+    /// Check sleep timer when app comes to foreground
+    private func checkSleepTimerOnForeground() {
+        guard let endTime = sleepTimerEndTime else { return }
+
+        if endTime <= Date() {
+            // Timer expired while in background
+            print("[PlayerManager] Sleep timer expired in background - pausing now")
+            sleepTimerFired()
+        } else {
+            // Timer still active, update remaining and restart update loop
+            sleepTimerRemaining = endTime.timeIntervalSinceNow
+            startSleepTimerUpdateLoop()
+        }
+
+        // Cancel notification since we're now in foreground
+        UNUserNotificationCenter.current().removePendingNotificationRequests(
+            withIdentifiers: [Self.sleepTimerNotificationId]
+        )
+    }
+
+    /// Schedule a notification to fire when timer expires (for background)
+    private func scheduleSleepTimerNotification() {
+        guard let endTime = sleepTimerEndTime, endTime > Date() else { return }
+
+        // Stop the update timer when going to background
+        sleepTimerUpdateTimer?.invalidate()
+        sleepTimerUpdateTimer = nil
+
+        let content = UNMutableNotificationContent()
+        content.title = "Sleep Timer"
+        content.body = "Stopping playback..."
+        content.sound = nil // Silent
+
+        let trigger = UNTimeIntervalNotificationTrigger(
+            timeInterval: endTime.timeIntervalSinceNow,
+            repeats: false
+        )
+
+        let request = UNNotificationRequest(
+            identifier: Self.sleepTimerNotificationId,
+            content: content,
+            trigger: trigger
+        )
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("[PlayerManager] Failed to schedule sleep timer notification: \(error)")
+            } else {
+                print("[PlayerManager] Scheduled background sleep timer notification")
+            }
+        }
+    }
+
+    private func requestNotificationPermission() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { granted, error in
+            if granted {
+                print("[PlayerManager] Notification permission granted for sleep timer")
+            }
+        }
+    }
+
+    private func startSleepTimerUpdateLoop() {
+        sleepTimerUpdateTimer?.invalidate()
+
+        sleepTimerUpdateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                self?.updateSleepTimerRemaining()
+            }
+        }
+    }
+
+    private func updateSleepTimerRemaining() {
+        guard let endTime = sleepTimerEndTime else {
+            sleepTimerRemaining = 0
+            return
+        }
+
+        let remaining = endTime.timeIntervalSinceNow
+        if remaining > 0 {
+            sleepTimerRemaining = remaining
+        } else {
+            // Timer expired
+            sleepTimerFired()
+        }
+    }
+
+    private func sleepTimerFired() {
+        print("[PlayerManager] Sleep timer fired - stopping playback")
+
+        // Clean up timer state first
+        sleepTimerUpdateTimer?.invalidate()
+        sleepTimerUpdateTimer = nil
+        sleepTimerEndTime = nil
+        sleepTimerRemaining = 0
+
+        // Stop playback on the server with retries
+        Task {
+            await stopPlaybackWithRetry(maxAttempts: 3)
+        }
+
+        playbackState = .paused
+    }
+
+    private func stopPlaybackWithRetry(maxAttempts: Int) async {
+        for attempt in 1...maxAttempts {
+            do {
+                try await XonoraClient.shared.stop()
+                print("[PlayerManager] Sleep timer: stopped (attempt \(attempt))")
+                return
+            } catch {
+                print("[PlayerManager] Sleep timer: stop failed \(attempt)/\(maxAttempts) - \(error)")
+                do {
+                    try await XonoraClient.shared.pause()
+                    print("[PlayerManager] Sleep timer: paused (attempt \(attempt))")
+                    return
+                } catch {
+                    print("[PlayerManager] Sleep timer: pause failed \(attempt)/\(maxAttempts)")
+                }
+                if attempt < maxAttempts {
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                }
+            }
+        }
+        print("[PlayerManager] Sleep timer: failed after \(maxAttempts) attempts")
     }
 
     // MARK: - Now Playing Info

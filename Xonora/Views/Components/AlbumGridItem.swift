@@ -21,10 +21,13 @@ struct AlbumGridItem: View {
                     .lineLimit(1)
                     .foregroundColor(.primary)
 
-                Text(album.artistNames)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
+                HStack(spacing: 4) {
+                    ProviderIcon(provider: album.sourceProvider, size: 12)
+                    Text(album.artistNames)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
             }
         }
     }

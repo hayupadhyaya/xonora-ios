@@ -29,6 +29,15 @@ struct Album: Identifiable, Codable, Hashable {
         return ""
     }
 
+    /// Returns the source provider (e.g., apple_music, spotify) extracted from URI
+    var sourceProvider: String {
+        if let scheme = URL(string: uri)?.scheme,
+           !scheme.isEmpty && scheme != "library" && scheme != "file" {
+            return scheme
+        }
+        return provider
+    }
+
     enum CodingKeys: String, CodingKey {
         case itemId = "item_id"
         case provider

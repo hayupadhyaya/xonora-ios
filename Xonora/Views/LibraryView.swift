@@ -4,35 +4,11 @@ struct LibraryView: View {
     @EnvironmentObject var libraryViewModel: LibraryViewModel
     @EnvironmentObject var playerViewModel: PlayerViewModel
 
-    @State private var selectedCategory: LibraryCategory = .albums
     @State private var isInitialLoad = true
-
-    enum LibraryCategory: String, CaseIterable, Identifiable {
-        case albums = "Albums"
-        case songs = "Songs"
-        case playlists = "Playlists"
-        case artists = "Artists"
-
-        var id: String { self.rawValue }
-
-        var icon: String {
-            switch self {
-            case .albums: return "square.stack.fill"
-            case .songs: return "music.note"
-            case .playlists: return "music.note.list"
-            case .artists: return "person.2.fill"
-            }
-        }
-    }
-
-    private let columns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
 
     var body: some View {
         NavigationStack {
-            ZStack {
+            Group {
                 if (libraryViewModel.isLoading || isInitialLoad) && libraryViewModel.albums.isEmpty {
                     VStack {
                         Spacer()
@@ -54,83 +30,342 @@ struct LibraryView: View {
                         }
                     }
                 } else {
-                    TabView(selection: $selectedCategory) {
-                        categoryScrollView { albumsGrid }.tag(LibraryCategory.albums)
-                        categoryScrollView { songsList }.tag(LibraryCategory.songs)
-                        categoryScrollView { playlistsGrid }.tag(LibraryCategory.playlists)
-                        categoryScrollView { artistsList }.tag(LibraryCategory.artists)
-                    }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                    .safeAreaInset(edge: .top, spacing: 0) {
-                        categoryTabBar
-                    }
+                    libraryContent
                 }
             }
-            .navigationBarHidden(true)
+            .navigationTitle("Library")
             .background(Color(UIColor.systemGroupedBackground))
+            .refreshable {
+                await libraryViewModel.loadLibrary(forceRefresh: true)
+                await libraryViewModel.loadRecentlyPlayed()
+            }
         }
         .task {
-            // Initial load attempt (loads from cache even if disconnected)
             await libraryViewModel.loadLibrary()
+            await libraryViewModel.loadRecentlyPlayed()
             isInitialLoad = false
         }
         .onChange(of: playerViewModel.isConnected) { oldValue, connected in
             if connected {
                 Task {
                     await libraryViewModel.loadLibrary()
+                    await libraryViewModel.loadRecentlyPlayed()
                 }
             }
         }
     }
 
-    private var categoryTabBar: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                ForEach(LibraryCategory.allCases) { category in
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                            selectedCategory = category
+    private var libraryContent: some View {
+        List {
+            // Recently Played Section
+            if !libraryViewModel.recentlyPlayed.isEmpty {
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 12) {
+                            ForEach(libraryViewModel.recentlyPlayed) { item in
+                                RecentlyPlayedCard(item: item)
+                            }
                         }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: category.icon)
-                                .font(.system(size: 20))
-                                .symbolVariant(selectedCategory == category ? .fill : .none)
-                            
-                            Text(category.rawValue)
-                                .font(.system(size: 10))
-                                .fontWeight(.medium)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .contentShape(Rectangle())
-                        .foregroundColor(selectedCategory == category ? .accentColor : .secondary)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 8)
                     }
-                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                } header: {
+                    HStack {
+                        Text("Recently Played")
+                        Spacer()
+                        if libraryViewModel.isLoadingRecent {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+                    }
                 }
             }
-            .padding(.horizontal, 4)
-            .padding(.top, 4)
-            
-            Divider().background(Color.primary.opacity(0.1))
-        }
-        .background(.ultraThinMaterial)
-    }
 
-    @ViewBuilder
-    private func categoryScrollView<Content: View>(@ViewBuilder content: @escaping () -> Content) -> some View {
+            // Library Categories Section
+            Section {
+                NavigationLink {
+                    PlaylistsListView()
+                } label: {
+                    LibraryMenuRow(
+                        icon: "music.note.list",
+                        iconColor: .orange,
+                        title: "Playlists",
+                        count: libraryViewModel.playlists.count
+                    )
+                }
+
+                NavigationLink {
+                    ArtistsListView()
+                } label: {
+                    LibraryMenuRow(
+                        icon: "person.2.fill",
+                        iconColor: .pink,
+                        title: "Artists",
+                        count: libraryViewModel.artists.count
+                    )
+                }
+
+                NavigationLink {
+                    AlbumsListView()
+                } label: {
+                    LibraryMenuRow(
+                        icon: "square.stack.fill",
+                        iconColor: .purple,
+                        title: "Albums",
+                        count: libraryViewModel.albums.count
+                    )
+                }
+
+                NavigationLink {
+                    SongsListView()
+                } label: {
+                    LibraryMenuRow(
+                        icon: "music.note",
+                        iconColor: .red,
+                        title: "Songs",
+                        count: libraryViewModel.tracks.count
+                    )
+                }
+            }
+
+            // Recently Added Section
+            if !libraryViewModel.albums.isEmpty {
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(libraryViewModel.albums.prefix(10)) { album in
+                                NavigationLink(destination: AlbumDetailView(album: album)) {
+                                    RecentAlbumCard(album: album)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 8)
+                    }
+                    .listRowInsets(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12))
+                } header: {
+                    Text("Recently Added")
+                }
+            }
+
+            // Quick Access to Artists
+            if !libraryViewModel.artists.isEmpty {
+                Section {
+                    ForEach(libraryViewModel.artists.prefix(5)) { artist in
+                        NavigationLink(destination: ArtistDetailView(artist: artist)) {
+                            HStack(spacing: 12) {
+                                CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: artist.imageUrl, size: .thumbnail)) {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .overlay {
+                                            Image(systemName: "person.fill")
+                                                .foregroundColor(.gray)
+                                        }
+                                }
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 44, height: 44)
+                                .clipShape(Circle())
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(artist.name)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+
+                                    HStack(spacing: 4) {
+                                        ProviderIcon(provider: artist.provider, size: 12)
+                                        Text("Artist")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    HStack {
+                        Text("Artists")
+                        Spacer()
+                        NavigationLink("See All") {
+                            ArtistsListView()
+                        }
+                        .font(.subheadline)
+                    }
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .safeAreaInset(edge: .bottom) {
+            if playerViewModel.hasTrack {
+                Color.clear.frame(height: 80)
+            }
+        }
+    }
+}
+
+// MARK: - Library Menu Row
+
+struct LibraryMenuRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let count: Int
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(iconColor)
+                .frame(width: 28)
+
+            Text(title)
+                .font(.body)
+
+            Spacer()
+
+            Text("\(count)")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Recent Album Card
+
+struct RecentAlbumCard: View {
+    let album: Album
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: album.imageUrl, size: .small)) {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.3))
+                    .overlay {
+                        Image(systemName: "music.note")
+                            .font(.title)
+                            .foregroundColor(.gray)
+                    }
+            }
+            .aspectRatio(contentMode: .fill)
+            .frame(width: 140, height: 140)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(album.name)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
+
+                HStack(spacing: 3) {
+                    ProviderIcon(provider: album.provider, size: 10)
+                    Text(album.artistNames)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .frame(width: 140, alignment: .leading)
+        }
+    }
+}
+
+// MARK: - Albums List View
+
+struct AlbumsListView: View {
+    @EnvironmentObject var libraryViewModel: LibraryViewModel
+    @EnvironmentObject var playerViewModel: PlayerViewModel
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
+    var body: some View {
         ScrollView {
-            content()
-                .padding(.top, 16)
+            if libraryViewModel.albums.isEmpty {
+                ContentUnavailableView(
+                    "No Albums",
+                    systemImage: "square.stack",
+                    description: Text("Your library has no albums.")
+                )
+                .padding(.top, 100)
+            } else {
+                LazyVGrid(columns: columns, spacing: 20) {
+                    ForEach(libraryViewModel.albums) { album in
+                        NavigationLink(destination: AlbumDetailView(album: album)) {
+                            AlbumGridItem(album: album)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
+            }
         }
-        .refreshable {
-            await libraryViewModel.loadLibrary(forceRefresh: true)
-        }
+        .navigationTitle("Albums")
+        .navigationBarTitleDisplayMode(.large)
+        .background(Color(UIColor.systemGroupedBackground))
     }
+}
 
-    private var playlistsGrid: some View {
-        LazyVStack(spacing: 0) {
-            if libraryViewModel.playlists.isEmpty && !libraryViewModel.isLoading {
+// MARK: - Songs List View
+
+struct SongsListView: View {
+    @EnvironmentObject var libraryViewModel: LibraryViewModel
+    @EnvironmentObject var playerViewModel: PlayerViewModel
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                if libraryViewModel.tracks.isEmpty {
+                    ContentUnavailableView(
+                        "No Songs",
+                        systemImage: "music.note",
+                        description: Text("Your library has no songs.")
+                    )
+                    .padding(.top, 100)
+                } else {
+                    ForEach(Array(libraryViewModel.tracks.enumerated()), id: \.element.id) { index, track in
+                        TrackRow(
+                            track: track,
+                            index: index + 1,
+                            showArtwork: true,
+                            isPlaying: playerViewModel.currentTrack?.itemId == track.itemId,
+                            numberFirst: true
+                        ) {
+                            playerViewModel.playTrack(track, sourceName: "Songs")
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                }
+            }
+            .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
+        }
+        .navigationTitle("Songs")
+        .navigationBarTitleDisplayMode(.large)
+        .background(Color(UIColor.systemGroupedBackground))
+    }
+}
+
+// MARK: - Playlists List View
+
+struct PlaylistsListView: View {
+    @EnvironmentObject var libraryViewModel: LibraryViewModel
+    @EnvironmentObject var playerViewModel: PlayerViewModel
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
+    var body: some View {
+        ScrollView {
+            if libraryViewModel.playlists.isEmpty {
                 ContentUnavailableView(
                     "No Playlists",
                     systemImage: "music.note.list",
@@ -150,106 +385,188 @@ struct LibraryView: View {
                 .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
             }
         }
+        .navigationTitle("Playlists")
+        .navigationBarTitleDisplayMode(.large)
+        .background(Color(UIColor.systemGroupedBackground))
     }
+}
 
-    private var albumsGrid: some View {
-        LazyVStack(spacing: 0) {
-            if libraryViewModel.albums.isEmpty && !libraryViewModel.isLoading {
-                ContentUnavailableView(
-                    "No Albums",
-                    systemImage: "square.stack",
-                    description: Text("Your library is empty. Add some music to get started.")
-                )
-                .padding(.top, 100)
-            } else {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(libraryViewModel.albums) { album in
-                        NavigationLink(destination: AlbumDetailView(album: album)) {
-                            AlbumGridItem(album: album)
+// MARK: - Artists List View
+
+struct ArtistsListView: View {
+    @EnvironmentObject var libraryViewModel: LibraryViewModel
+    @EnvironmentObject var playerViewModel: PlayerViewModel
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                if libraryViewModel.artists.isEmpty {
+                    ContentUnavailableView(
+                        "No Artists",
+                        systemImage: "person.2",
+                        description: Text("Your library has no artists.")
+                    )
+                    .padding(.top, 100)
+                } else {
+                    ForEach(libraryViewModel.artists) { artist in
+                        NavigationLink(destination: ArtistDetailView(artist: artist)) {
+                            HStack(spacing: 12) {
+                                CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: artist.imageUrl, size: .thumbnail)) {
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .overlay {
+                                            Image(systemName: "person.fill")
+                                                .foregroundColor(.gray)
+                                        }
+                                }
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 50, height: 50)
+                                .clipShape(Circle())
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(artist.name)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+
+                                    HStack(spacing: 4) {
+                                        ProviderIcon(provider: artist.provider, size: 12)
+                                        Text("Artist")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundColor(.secondary.opacity(0.5))
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 16)
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
-            }
-        }
-    }
 
-    private var songsList: some View {
-        LazyVStack(spacing: 0) {
-            if libraryViewModel.tracks.isEmpty && !libraryViewModel.isLoading {
-                ContentUnavailableView(
-                    "No Songs",
-                    systemImage: "music.note",
-                    description: Text("Your library has no songs. Add individual tracks to see them here.")
-                )
-                .padding(.top, 100)
-            } else {
-                ForEach(Array(libraryViewModel.tracks.enumerated()), id: \.element.id) { index, track in
-                    TrackRow(
-                        track: track,
-                        index: index + 1,
-                        showArtwork: true,
-                        isPlaying: playerViewModel.currentTrack?.itemId == track.itemId,
-                        numberFirst: true
-                    ) {
-                        playerViewModel.playTrack(track, sourceName: "Songs")
-                    }
-                    .padding(.horizontal, 12)
-                }
-            }
-        }
-        .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
-    }
-
-    private var artistsList: some View {
-        LazyVStack(spacing: 0) {
-            if libraryViewModel.artists.isEmpty && !libraryViewModel.isLoading {
-                ContentUnavailableView(
-                    "No Artists",
-                    systemImage: "person.2",
-                    description: Text("Your library is empty.")
-                )
-                .padding(.top, 100)
-            } else {
-                ForEach(libraryViewModel.artists) { artist in
-                    NavigationLink(destination: ArtistDetailView(artist: artist)) {
-                        HStack(spacing: 12) {
-                            CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: artist.imageUrl, size: .thumbnail)) {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .overlay {
-                                        Image(systemName: "person.fill")
-                                            .foregroundColor(.gray)
-                                    }
-                            }
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 44, height: 44) // Match TrackRow artwork size
-                            .clipShape(Circle())
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(artist.name)
-                                    .font(.body)
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1)
-                            }
-
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.bold))
-                                .foregroundColor(.secondary.opacity(0.5))
+                        if artist.id != libraryViewModel.artists.last?.id {
+                            Divider()
+                                .padding(.leading, 78)
                         }
-                        .padding(.vertical, 8) // Match TrackRow vertical padding
-                        .padding(.horizontal, 12)
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
                 }
             }
+            .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
         }
-        .padding(.bottom, playerViewModel.hasTrack ? 120 : 20)
+        .navigationTitle("Artists")
+        .navigationBarTitleDisplayMode(.large)
+        .background(Color(UIColor.systemGroupedBackground))
+    }
+}
+
+// MARK: - Recently Played Card
+
+struct RecentlyPlayedCard: View {
+    let item: RecentlyPlayedItem
+    @ObservedObject private var playerManager = PlayerManager.shared
+
+    var body: some View {
+        Button {
+            playItem()
+        } label: {
+            VStack(alignment: .leading, spacing: 6) {
+                // Artwork
+                ZStack(alignment: .bottomTrailing) {
+                    CachedAsyncImage(url: XonoraClient.shared.getImageURL(for: item.imageUrl, size: .small)) {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                            .overlay {
+                                Image(systemName: iconForMediaType)
+                                    .font(.title2)
+                                    .foregroundColor(.gray)
+                            }
+                    }
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 120, height: 120)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+
+                    // Media type badge
+                    mediaTypeBadge
+                        .padding(6)
+                }
+
+                // Title and artist
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.name)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
+
+                    if let artist = item.artist {
+                        Text(artist)
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                .frame(width: 120, alignment: .leading)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var iconForMediaType: String {
+        switch item.mediaType {
+        case "track": return "music.note"
+        case "album": return "square.stack"
+        case "playlist": return "music.note.list"
+        case "artist": return "person.fill"
+        default: return "music.note"
+        }
+    }
+
+    private var mediaTypeBadge: some View {
+        Group {
+            switch item.mediaType {
+            case "track":
+                Image(systemName: "music.note")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(4)
+                    .background(Color.red.opacity(0.9))
+                    .clipShape(Circle())
+            case "album":
+                Image(systemName: "square.stack.fill")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(4)
+                    .background(Color.purple.opacity(0.9))
+                    .clipShape(Circle())
+            case "playlist":
+                Image(systemName: "music.note.list")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(4)
+                    .background(Color.orange.opacity(0.9))
+                    .clipShape(Circle())
+            default:
+                EmptyView()
+            }
+        }
+    }
+
+    private func playItem() {
+        Task {
+            do {
+                // Play the item via Music Assistant
+                try await XonoraClient.shared.playMedia(uris: [item.uri], queueOption: "play")
+                print("[RecentlyPlayedCard] Playing: \(item.name)")
+            } catch {
+                print("[RecentlyPlayedCard] Failed to play: \(error)")
+            }
+        }
     }
 }
 

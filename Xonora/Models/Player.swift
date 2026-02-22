@@ -19,7 +19,7 @@ struct MAPlayer: Identifiable, Codable, Hashable {
         case name
         case type
         case available
-        case state
+        case state = "playback_state"
         case volume = "volume_level"
         case currentMedia = "current_media"
         case queueId = "active_source"
@@ -44,16 +44,23 @@ struct CurrentMedia: Codable, Hashable {
     let title: String?
     let artist: String?
     let album: String?
-    let imageUrl: String?
+    private let imageUrl: String?
+    private let image: String?
     let duration: TimeInterval?
     let position: TimeInterval?
     let uri: String?
+
+    /// Returns the image URL, trying both possible field names from the API
+    var imageUrlResolved: String? {
+        imageUrl ?? image
+    }
 
     enum CodingKeys: String, CodingKey {
         case title
         case artist
         case album
         case imageUrl = "image_url"
+        case image
         case duration
         case position
         case uri

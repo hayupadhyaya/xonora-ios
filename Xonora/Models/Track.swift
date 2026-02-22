@@ -33,6 +33,22 @@ struct Track: Identifiable, Codable, Hashable {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
+    /// Returns the source provider (e.g., apple_music, spotify) extracted from URI or provider mappings
+    /// This is useful when items are in the library but originally come from a streaming service
+    var sourceProvider: String {
+        // First try to extract from URI (e.g., "apple_music://track/123" -> "apple_music")
+        if let scheme = URL(string: uri)?.scheme,
+           !scheme.isEmpty && scheme != "library" && scheme != "file" {
+            return scheme
+        }
+        // Then try provider mappings
+        if let mapping = providerMappings?.first(where: { $0.providerDomain != "library" && $0.providerDomain != "filesystem" }) {
+            return mapping.providerDomain
+        }
+        // Fall back to main provider
+        return provider
+    }
+
     enum CodingKeys: String, CodingKey {
         case itemId = "item_id"
         case provider
