@@ -8,7 +8,7 @@ Xonora is a high-performance, native client for [Music Assistant](https://music-
 
 ## Beta Testing
 
-Xonora is currently in open alpha. Join the public TestFlight to help test the app:
+Xonora is currently in open beta. Join the public TestFlight to help test the app:
 
 **[Join the Xonora TestFlight](https://testflight.apple.com/join/5rUk1uqN)**
 
@@ -221,8 +221,7 @@ Gone are the days of hunting for access tokens, copying them from browser dev to
 
 ## License
 
-This project is open-source software for personal use with Music Assistant.
-
+This project was open-source up until version 1.0.4. All subsequent versions are closed-source and intended for personal use with Music Assistant.
 ---
 
 **Enjoy your music with Xonora! 🎶**
