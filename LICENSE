@@ -1,22 +1,3 @@
-Xonora for iOS, watchOS and CarPlay (original Swift app, v1.0.8)
-Copyright (C) 2025-2026 Hay Upadhyaya
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, version 3 of the License only.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License below for more details.
-
-SPDX-License-Identifier: GPL-3.0-only
-
-Third-party components bundled in this repository keep their own
-licences (Apache-2.0, BSD-3-Clause, MIT) -- see NOTICE.
-
------------------------------------------------------------------------
-
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
