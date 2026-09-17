@@ -1,0 +1,176 @@
+import Foundation
+
+struct Chapter: Codable, Hashable, Identifiable {
+    let position: Int
+    let name: String
+    let start: TimeInterval
+    let end: TimeInterval
+
+    var id: Int { position }
+
+    var duration: TimeInterval {
+        end - start
+    }
+
+    var formattedDuration: String {
+        let totalSeconds = Int(duration)
+        let hours = totalSeconds / 3600
+        let minutes = (totalSeconds % 3600) / 60
+        let seconds = totalSeconds % 60
+
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            
+            return String(format: "%d:%02d", minutes, seconds)
+        }
+    }
+}
+
+struct Audiobook: Identifiable, Codable, Hashable {
+    let itemId: String
+    let provider: String
+    let name: String
+    let version: String?
+    let authors: [String]?
+    let narrators: [String]?
+    let publisher: String?
+    let duration: TimeInterval?
+    let uri: String
+    let metadata: AudiobookMetadata?
+    let image: MediaItemImage?
+    let series: String?
+    let studio: String?
+    var favorite: Bool?
+
+    var id: String { itemId }
+
+    var authorNames: String {
+        authors?.joined(separator: ", ") ?? "Unknown Author"
+    }
+
+    var narratorNames: String? {
+        guard let narrators = narrators, !narrators.isEmpty else { return nil }
+        return narrators.joined(separator: ", ")
+    }
+
+    var imageUrl: String? {
+        // Check metadata images first - they have separate provider and path fields
+        if let images = metadata?.images, !images.isEmpty {
+            // Prioritize HTTP/HTTPS URLs (from external sources like theaudiodb)
+            for image in images where image.type == "thumb" {
+                let path = image.path
+                if path.hasPrefix("http://") || path.hasPrefix("https://") {
+                    return path
+                }
+                if path.hasPrefix("data:image") {
+                    return path
+                }
+            }
+            
+            // If no HTTP URLs, use the first thumb image and construct a provider URI
+            if let thumbImage = images.first(where: { $0.type == "thumb" }) {
+                let path = thumbImage.path
+                let provider = thumbImage.provider
+                
+                // If path is already a full URL, use it
+                if path.hasPrefix("http://") || path.hasPrefix("https://") || path.hasPrefix("data:image") {
+                    return path
+                }
+                
+                // Otherwise construct a provider URI: "provider://path"
+                if !provider.isEmpty {
+                    return "\(provider)://\(path)"
+                }
+                
+                // If provider is empty but path exists, try returning just the path
+                return path
+            }
+            
+            // Fallback: use any image
+            if let anyImage = images.first {
+                let path = anyImage.path
+                if path.hasPrefix("http://") || path.hasPrefix("https://") || path.hasPrefix("data:image") {
+                    return path
+                }
+                if !anyImage.provider.isEmpty {
+                    return "\(anyImage.provider)://\(path)"
+                }
+            }
+        }
+        
+        // Check top-level image field
+        if let image = image {
+            let path = image.path
+            if path.hasPrefix("http://") || path.hasPrefix("https://") || path.hasPrefix("data:image") {
+                return path
+            }
+            if !image.provider.isEmpty {
+                return "\(image.provider)://\(path)"
+            }
+            return path
+        }
+
+        // For everything else (including local files), use the item's URI
+        // Music Assistant's imageproxy can extract artwork from URIs
+        return uri
+    }
+
+    var displayYear: String {
+        if let releaseDate = metadata?.releaseDate {
+            let year = releaseDate.prefix(4)
+            return String(year)
+        }
+        return ""
+    }
+
+    var chapters: [Chapter] {
+        metadata?.chapters ?? []
+    }
+
+    var hasChapters: Bool {
+        !chapters.isEmpty
+    }
+
+    var formattedDuration: String? {
+        guard let duration = duration else { return nil }
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case itemId = "item_id"
+        case provider
+        case name
+        case version
+        case authors
+        case narrators
+        case publisher
+        case duration
+        case uri
+        case metadata
+        case image
+        case series
+        case studio
+        case favorite
+    }
+}
+
+// AudiobookMetadata extends MediaItemMetadata to include chapters
+struct AudiobookMetadata: Codable, Hashable {
+    let images: [MediaItemImage]?
+    let chapters: [Chapter]?
+    let releaseDate: String?
+
+    enum CodingKeys: String, CodingKey {
+        case images
+        case chapters
+        case releaseDate = "release_date"
+    }
+}

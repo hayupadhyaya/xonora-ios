@@ -1,0 +1,1204 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C8A75B4140C49569B5AB95B /* Audiobook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161E76C61C5D455AA7153021 /* Audiobook.swift */; };
+		1D0530272F3B9CE2007D0C6A /* EmptyNowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0530262F3B9CE2007D0C6A /* EmptyNowPlayingView.swift */; };
+		1D0530292F3C6C6F007D0C6A /* SimilarTracksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0530282F3C6C6F007D0C6A /* SimilarTracksView.swift */; };
+		1D05302C2F3C6C7D007D0C6A /* TrackCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D05302B2F3C6C7D007D0C6A /* TrackCardItem.swift */; };
+		1D05302D2F3C6C7D007D0C6A /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D05302A2F3C6C7D007D0C6A /* ToastView.swift */; };
+		1D05302F2F3CD442007D0C6A /* TrackRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D05302E2F3CD442007D0C6A /* TrackRow.swift */; };
+		1D0530332F3CD458007D0C6A /* TrackVersionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0530322F3CD458007D0C6A /* TrackVersionsView.swift */; };
+		1D0530342F3CD458007D0C6A /* AlbumVersionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0530302F3CD458007D0C6A /* AlbumVersionsView.swift */; };
+		1D0530352F3CD458007D0C6A /* TrackAlbumsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D0530312F3CD458007D0C6A /* TrackAlbumsView.swift */; };
+		1D4F3CC02F67BF0B007D0C6A /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D4F3CBF2F67BF0B007D0C6A /* Intents.framework */; };
+		1D4F3CC72F67BF0B007D0C6A /* XonoraIntents.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1D4F3CBE2F67BF0B007D0C6A /* XonoraIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1D861CD32F0FB2DD007D0C6A /* Color+Xonora.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */; };
+		1D861D2F2F110D01007D0C6A /* SendspinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 1D861D2E2F110D01007D0C6A /* SendspinKit */; };
+		1D861D302F110D01007D0C6A /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D861D312F110D01007D0C6A /* AppIntents.framework */; };
+		1D9555402F1C668A007D0C6A /* DeviceSwitcherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D95553F2F1C668A007D0C6A /* DeviceSwitcherView.swift */; };
+		1D9555422F1C66A1007D0C6A /* MultiDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9555412F1C66A1007D0C6A /* MultiDeviceManager.swift */; };
+		1D95556B2F1C9AA3007D0C6A /* PlaybackHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D95556A2F1C9AA3007D0C6A /* PlaybackHistoryItem.swift */; };
+		1D95556D2F1C9AC1007D0C6A /* PlaybackHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D95556C2F1C9AC1007D0C6A /* PlaybackHistoryManager.swift */; };
+		1D95556F2F1C9ACF007D0C6A /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D95556E2F1C9ACF007D0C6A /* HomeViewModel.swift */; };
+		1D9555722F1C9AE5007D0C6A /* GlobalSearchSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9555702F1C9AE5007D0C6A /* GlobalSearchSheet.swift */; };
+		1D9555732F1C9AE5007D0C6A /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9555712F1C9AE5007D0C6A /* HomeView.swift */; };
+		1D97486A2F269F4C007D0C6A /* AppearanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9748662F269F4C007D0C6A /* AppearanceView.swift */; };
+		1D97486B2F269F4C007D0C6A /* CustomizeHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9748672F269F4C007D0C6A /* CustomizeHomeView.swift */; };
+		1D97486C2F269F4C007D0C6A /* TabBarOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9748682F269F4C007D0C6A /* TabBarOrderView.swift */; };
+		1DB0D1CC2F429552007D0C6A /* RecentlyPlayedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0D1CB2F429552007D0C6A /* RecentlyPlayedItem.swift */; };
+		1DB0D1CF2F42957B007D0C6A /* ProviderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0D1CE2F42957B007D0C6A /* ProviderIcon.swift */; };
+		1DB0D1D02F42957B007D0C6A /* FilterChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0D1CD2F42957B007D0C6A /* FilterChip.swift */; };
+		1DB0D21A2F42D1B1007D0C6A /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0D2192F42D1B1007D0C6A /* UserPreferences.swift */; };
+		1DB0D21D2F42D1C2007D0C6A /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DB0D21C2F42D1C2007D0C6A /* Player.swift */; };
+		1DBE390B0CC779C24BCCD6FC /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AD5DB8B6A4008C674E7F25 /* KeychainHelper.swift */; };
+		1DF338CA2F3DAFC1007D0C6A /* XonoraWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 1DF338C02F3DAFBF007D0C6A /* XonoraWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		1DF338D02F3DB053007D0C6A /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF338CF2F3DB053007D0C6A /* WatchConnectivity.framework */; };
+		1DF338D22F3DB06F007D0C6A /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF338D12F3DB06F007D0C6A /* WatchConnectivity.framework */; };
+		1DF338D52F3DB109007D0C6A /* WatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338D32F3DB109007D0C6A /* WatchModels.swift */; };
+		1DF338D62F3DB109007D0C6A /* WatchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338D32F3DB109007D0C6A /* WatchModels.swift */; };
+		1DF338E52F3DB15B007D0C6A /* WatchArtistsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338DC2F3DB15B007D0C6A /* WatchArtistsListView.swift */; };
+		1DF338E62F3DB15B007D0C6A /* WatchLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338DE2F3DB15B007D0C6A /* WatchLibraryView.swift */; };
+		1DF338E72F3DB15B007D0C6A /* WatchRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338E12F3DB15B007D0C6A /* WatchRootView.swift */; };
+		1DF338E82F3DB15B007D0C6A /* WatchDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338DD2F3DB15B007D0C6A /* WatchDevicesView.swift */; };
+		1DF338E92F3DB15B007D0C6A /* WatchDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338D72F3DB15B007D0C6A /* WatchDataProvider.swift */; };
+		1DF338EA2F3DB15B007D0C6A /* WatchConnectivityProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338D92F3DB15B007D0C6A /* WatchConnectivityProvider.swift */; };
+		1DF338EB2F3DB15B007D0C6A /* XonoraWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338E32F3DB15B007D0C6A /* XonoraWatchApp.swift */; };
+		1DF338EC2F3DB15B007D0C6A /* WatchAlbumsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338DB2F3DB15B007D0C6A /* WatchAlbumsListView.swift */; };
+		1DF338ED2F3DB15B007D0C6A /* WatchNowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338DF2F3DB15B007D0C6A /* WatchNowPlayingView.swift */; };
+		1DF338EE2F3DB15B007D0C6A /* WatchPlaylistsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338E02F3DB15B007D0C6A /* WatchPlaylistsListView.swift */; };
+		1DF338F42F3DB90C007D0C6A /* WatchAlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338F32F3DB90C007D0C6A /* WatchAlbumDetailView.swift */; };
+		1DF338F62F3DBA1C007D0C6A /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF338F52F3DBA1C007D0C6A /* WatchSessionManager.swift */; };
+		1DF339022F3DB15B007D0C6A /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF339012F3DB15B007D0C6A /* PreviewHelpers.swift */; };
+		3BE060BAE5AD4AD59FFAD088 /* Podcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A085818C6ECE4E969EA9CE34 /* Podcast.swift */; };
+		477F363586044F079D959C6E /* AudiobooksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC5A0976F7E4F33B4E5A531 /* AudiobooksView.swift */; };
+		65AF0966B82D4AE1AF02FC55 /* PodcastDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A076FA33D541D481700B71 /* PodcastDetailView.swift */; };
+		AA001002AA001002AA001002 /* MediaListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA001001AA001001AA001001 /* MediaListRow.swift */; };
+		AA002002AA002002AA002002 /* LibraryGridSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA002001AA002001AA002001 /* LibraryGridSettingsView.swift */; };
+		AAA00001 /* XonoraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00001 /* XonoraApp.swift */; };
+		AAA00002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00002 /* ContentView.swift */; };
+		AAA00003 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00003 /* LibraryView.swift */; };
+		AAA00004 /* AlbumDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00004 /* AlbumDetailView.swift */; };
+		AAA00005 /* NowPlayingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00005 /* NowPlayingView.swift */; };
+		AAA00009 /* PlayerControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00009 /* PlayerControls.swift */; };
+		AAA00010 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00010 /* Track.swift */; };
+		AAA00011 /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00011 /* Album.swift */; };
+		AAA00012 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00012 /* Artist.swift */; };
+		AAA00014 /* XonoraClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00014 /* XonoraClient.swift */; };
+		AAA00015 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00015 /* PlayerManager.swift */; };
+		AAA00016 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00016 /* LibraryViewModel.swift */; };
+		AAA00017 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00017 /* PlayerViewModel.swift */; };
+		AAA00018 /* SendspinClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00019 /* SendspinClient.swift */; };
+		AAA00019 /* BarVisibilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00050 /* BarVisibilityManager.swift */; };
+		AAA00020 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BBB00020 /* Assets.xcassets */; };
+		AAA00024 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00024 /* SceneDelegate.swift */; };
+		AAA00025 /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00025 /* CarPlaySceneDelegate.swift */; };
+		AAA00026 /* MetadataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00026 /* MetadataCache.swift */; };
+		AAA00027 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00027 /* ImageCache.swift */; };
+		AAA00028 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00028 /* Playlist.swift */; };
+		AAA00029 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00029 /* PlaylistDetailView.swift */; };
+		AAA00032 /* ArtistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00032 /* ArtistDetailView.swift */; };
+		AAA00034 /* ShaderPrewarmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00034 /* ShaderPrewarmer.swift */; };
+		AAA00041 /* PlayerGroupingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA00040 /* PlayerGroupingView.swift */; };
+		AAA00099 /* HistoryCardItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00099 /* HistoryCardItem.swift */; };
+		AAA00101 /* MarqueeText.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00101 /* MarqueeText.swift */; };
+		AAA00102 /* ChapterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00102 /* ChapterListView.swift */; };
+		AAC00103 /* LyricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB00103 /* LyricsView.swift */; };
+		AACC0002 /* TimeFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC0001 /* TimeFormatting.swift */; };
+		AACC0004 /* CompactProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC0003 /* CompactProgressBar.swift */; };
+		AACC0006 /* MediaGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AACC0005 /* MediaGridItem.swift */; };
+		BB000001BB000001BB000001 /* LanguageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000002BB000002BB000002 /* LanguageView.swift */; };
+		BF46F0A86C9946EFACC17CF2 /* Radio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57983BE380274D1A87B7CFF7 /* Radio.swift */; };
+		BF839FB2619F431187A6EF5B /* GlobalToolbarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFE6E8F496D4A6F880DEF34 /* GlobalToolbarModifier.swift */; };
+		CA000001 /* SiriIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA000002 /* SiriIntentHandler.swift */; };
+		CC32B5995DC94F7EA0989CA6 /* RadiosView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB21A3D9BAA4312A7FC107A /* RadiosView.swift */; };
+		D10E1F34107B4CE3822FEF8D /* AudiobookDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7217E531267F4F6B878C8FB6 /* AudiobookDetailView.swift */; };
+		DA5EFEE1053E4097801E8970 /* GlobalNavigationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92A75116A304E8E8D447FDF /* GlobalNavigationViewModel.swift */; };
+		F9C6F2EA8FD9D910B397909C /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 8672FDA034D2B0A475CE9A92 /* Localizable.xcstrings */; };
+		FF7F1727137F43B79D416E11 /* PodcastsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB7E67397A8A4DB698FE6845 /* PodcastsView.swift */; };
+		WWW00001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = WWW00002 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1D4F3CC52F67BF0B007D0C6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = JJJ00001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D4F3CBD2F67BF0B007D0C6A;
+			remoteInfo = XonoraIntents;
+		};
+		1DF338C82F3DAFC1007D0C6A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = JJJ00001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1DF338BF2F3DAFBF007D0C6A;
+			remoteInfo = "XonoraWatch Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1D4F3CC82F67BF0B007D0C6A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1D4F3CC72F67BF0B007D0C6A /* XonoraIntents.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1DF338CB2F3DAFC1007D0C6A /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				1DF338CA2F3DAFC1007D0C6A /* XonoraWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		161E76C61C5D455AA7153021 /* Audiobook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audiobook.swift; sourceTree = "<group>"; };
+		1D0530262F3B9CE2007D0C6A /* EmptyNowPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyNowPlayingView.swift; sourceTree = "<group>"; };
+		1D0530282F3C6C6F007D0C6A /* SimilarTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarTracksView.swift; sourceTree = "<group>"; };
+		1D05302A2F3C6C7D007D0C6A /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		1D05302B2F3C6C7D007D0C6A /* TrackCardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCardItem.swift; sourceTree = "<group>"; };
+		1D05302E2F3CD442007D0C6A /* TrackRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRow.swift; sourceTree = "<group>"; };
+		1D0530302F3CD458007D0C6A /* AlbumVersionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumVersionsView.swift; sourceTree = "<group>"; };
+		1D0530312F3CD458007D0C6A /* TrackAlbumsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackAlbumsView.swift; sourceTree = "<group>"; };
+		1D0530322F3CD458007D0C6A /* TrackVersionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackVersionsView.swift; sourceTree = "<group>"; };
+		1D0F92302F47A3D5007D0C6A /* XonoraRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = XonoraRelease.entitlements; sourceTree = "<group>"; };
+		1D0F92312F47A5F2007D0C6A /* Xonora.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Xonora.entitlements; sourceTree = "<group>"; };
+		1D4F3CBE2F67BF0B007D0C6A /* XonoraIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = XonoraIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D4F3CBF2F67BF0B007D0C6A /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Xonora.swift"; sourceTree = "<group>"; };
+		1D861D2C2F110C3D007D0C6A /* SendspinKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SendspinKit.swift; path = SendspinKit/Sources/SendspinKit/SendspinKit.swift; sourceTree = "<group>"; };
+		1D861D312F110D01007D0C6A /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
+		1D95553F2F1C668A007D0C6A /* DeviceSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSwitcherView.swift; sourceTree = "<group>"; };
+		1D9555412F1C66A1007D0C6A /* MultiDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceManager.swift; sourceTree = "<group>"; };
+		1D95556A2F1C9AA3007D0C6A /* PlaybackHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackHistoryItem.swift; sourceTree = "<group>"; };
+		1D95556C2F1C9AC1007D0C6A /* PlaybackHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackHistoryManager.swift; sourceTree = "<group>"; };
+		1D95556E2F1C9ACF007D0C6A /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		1D9555702F1C9AE5007D0C6A /* GlobalSearchSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalSearchSheet.swift; sourceTree = "<group>"; };
+		1D9555712F1C9AE5007D0C6A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		1D9748622F269EB7007D0C6A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		1D9748662F269F4C007D0C6A /* AppearanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceView.swift; sourceTree = "<group>"; };
+		1D9748672F269F4C007D0C6A /* CustomizeHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomizeHomeView.swift; sourceTree = "<group>"; };
+		1D9748682F269F4C007D0C6A /* TabBarOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarOrderView.swift; sourceTree = "<group>"; };
+		1DB0D1CB2F429552007D0C6A /* RecentlyPlayedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedItem.swift; sourceTree = "<group>"; };
+		1DB0D1CD2F42957B007D0C6A /* FilterChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterChip.swift; sourceTree = "<group>"; };
+		1DB0D1CE2F42957B007D0C6A /* ProviderIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderIcon.swift; sourceTree = "<group>"; };
+		1DB0D2192F42D1B1007D0C6A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		1DB0D21C2F42D1C2007D0C6A /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		1DF338C02F3DAFBF007D0C6A /* XonoraWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "XonoraWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DF338CF2F3DB053007D0C6A /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.2.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		1DF338D12F3DB06F007D0C6A /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = System/Library/Frameworks/WatchConnectivity.framework; sourceTree = SDKROOT; };
+		1DF338D32F3DB109007D0C6A /* WatchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchModels.swift; sourceTree = "<group>"; };
+		1DF338D72F3DB15B007D0C6A /* WatchDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDataProvider.swift; sourceTree = "<group>"; };
+		1DF338D92F3DB15B007D0C6A /* WatchConnectivityProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityProvider.swift; sourceTree = "<group>"; };
+		1DF338DB2F3DB15B007D0C6A /* WatchAlbumsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAlbumsListView.swift; sourceTree = "<group>"; };
+		1DF338DC2F3DB15B007D0C6A /* WatchArtistsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchArtistsListView.swift; sourceTree = "<group>"; };
+		1DF338DD2F3DB15B007D0C6A /* WatchDevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDevicesView.swift; sourceTree = "<group>"; };
+		1DF338DE2F3DB15B007D0C6A /* WatchLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLibraryView.swift; sourceTree = "<group>"; };
+		1DF338DF2F3DB15B007D0C6A /* WatchNowPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchNowPlayingView.swift; sourceTree = "<group>"; };
+		1DF338E02F3DB15B007D0C6A /* WatchPlaylistsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchPlaylistsListView.swift; sourceTree = "<group>"; };
+		1DF338E12F3DB15B007D0C6A /* WatchRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRootView.swift; sourceTree = "<group>"; };
+		1DF338E32F3DB15B007D0C6A /* XonoraWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XonoraWatchApp.swift; sourceTree = "<group>"; };
+		1DF338F32F3DB90C007D0C6A /* WatchAlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAlbumDetailView.swift; sourceTree = "<group>"; };
+		1DF338F52F3DBA1C007D0C6A /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
+		1DF339012F3DB15B007D0C6A /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
+		1FC5A0976F7E4F33B4E5A531 /* AudiobooksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobooksView.swift; sourceTree = "<group>"; };
+		4DB21A3D9BAA4312A7FC107A /* RadiosView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiosView.swift; sourceTree = "<group>"; };
+		57983BE380274D1A87B7CFF7 /* Radio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radio.swift; sourceTree = "<group>"; };
+		7217E531267F4F6B878C8FB6 /* AudiobookDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudiobookDetailView.swift; sourceTree = "<group>"; };
+		7CFE6E8F496D4A6F880DEF34 /* GlobalToolbarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalToolbarModifier.swift; sourceTree = "<group>"; };
+		8672FDA034D2B0A475CE9A92 /* Localizable.xcstrings */ = {isa = PBXFileReference; includeInIndex = 1; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		8F82B844DABB481AB979EBE4 /* MultiDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiDeviceManager.swift; sourceTree = "<group>"; };
+		9C54D7397A5646B18DC836D6 /* DeviceSwitcherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSwitcherView.swift; sourceTree = "<group>"; };
+		A085818C6ECE4E969EA9CE34 /* Podcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Podcast.swift; sourceTree = "<group>"; };
+		A92A75116A304E8E8D447FDF /* GlobalNavigationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalNavigationViewModel.swift; sourceTree = "<group>"; };
+		AA001001AA001001AA001001 /* MediaListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListRow.swift; sourceTree = "<group>"; };
+		AA002001AA002001AA002001 /* LibraryGridSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryGridSettingsView.swift; sourceTree = "<group>"; };
+		AAA00040 /* PlayerGroupingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerGroupingView.swift; sourceTree = "<group>"; };
+		AACC0001 /* TimeFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeFormatting.swift; sourceTree = "<group>"; };
+		AACC0003 /* CompactProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompactProgressBar.swift; sourceTree = "<group>"; };
+		AACC0005 /* MediaGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGridItem.swift; sourceTree = "<group>"; };
+		BB000002BB000002BB000002 /* LanguageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageView.swift; sourceTree = "<group>"; };
+		BBB00001 /* XonoraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XonoraApp.swift; sourceTree = "<group>"; };
+		BBB00002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BBB00003 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		BBB00004 /* AlbumDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumDetailView.swift; sourceTree = "<group>"; };
+		BBB00005 /* NowPlayingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingView.swift; sourceTree = "<group>"; };
+		BBB00008 /* TrackRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackRow.swift; sourceTree = "<group>"; };
+		BBB00009 /* PlayerControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControls.swift; sourceTree = "<group>"; };
+		BBB00010 /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		BBB00011 /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
+		BBB00012 /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
+		BBB00014 /* XonoraClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XonoraClient.swift; sourceTree = "<group>"; };
+		BBB00015 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
+		BBB00016 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		BBB00017 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		BBB00018 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBB00019 /* SendspinClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendspinClient.swift; sourceTree = "<group>"; };
+		BBB00020 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BBB00024 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		BBB00025 /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		BBB00026 /* MetadataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataCache.swift; sourceTree = "<group>"; };
+		BBB00027 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		BBB00028 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
+		BBB00029 /* PlaylistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailView.swift; sourceTree = "<group>"; };
+		BBB00032 /* ArtistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailView.swift; sourceTree = "<group>"; };
+		BBB00034 /* ShaderPrewarmer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPrewarmer.swift; sourceTree = "<group>"; };
+		BBB00050 /* BarVisibilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarVisibilityManager.swift; sourceTree = "<group>"; };
+		BBB00099 /* HistoryCardItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCardItem.swift; sourceTree = "<group>"; };
+		BBB00101 /* MarqueeText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeText.swift; sourceTree = "<group>"; };
+		BBB00102 /* ChapterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterListView.swift; sourceTree = "<group>"; };
+		BBB00103 /* LyricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsView.swift; sourceTree = "<group>"; };
+		CA000002 /* SiriIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiriIntentHandler.swift; sourceTree = "<group>"; };
+		CB7E67397A8A4DB698FE6845 /* PodcastsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsView.swift; sourceTree = "<group>"; };
+		CCC00001 /* Xonora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Xonora.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8A076FA33D541D481700B71 /* PodcastDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailView.swift; sourceTree = "<group>"; };
+		F1AD5DB8B6A4008C674E7F25 /* KeychainHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
+		WWW00002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1D4F3CCB2F67BF0B007D0C6A /* Exceptions for "XonoraIntents" folder in "XonoraIntents" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1D4F3CBD2F67BF0B007D0C6A /* XonoraIntents */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		1D4F3CC12F67BF0B007D0C6A /* XonoraIntents */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1D4F3CCB2F67BF0B007D0C6A /* Exceptions for "XonoraIntents" folder in "XonoraIntents" target */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = XonoraIntents;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D4F3CBB2F67BF0B007D0C6A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D4F3CC02F67BF0B007D0C6A /* Intents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1DF338BD2F3DAFBF007D0C6A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1DF338D02F3DB053007D0C6A /* WatchConnectivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DDD00001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D861D2F2F110D01007D0C6A /* SendspinKit in Frameworks */,
+				1D861D302F110D01007D0C6A /* AppIntents.framework in Frameworks */,
+				1DF338D22F3DB06F007D0C6A /* WatchConnectivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1D861D2B2F110C3D007D0C6A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338CF2F3DB053007D0C6A /* WatchConnectivity.framework */,
+				1DF338D12F3DB06F007D0C6A /* WatchConnectivity.framework */,
+				1D861D2C2F110C3D007D0C6A /* SendspinKit.swift */,
+				1D861D312F110D01007D0C6A /* AppIntents.framework */,
+				1D4F3CBF2F67BF0B007D0C6A /* Intents.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1D95557C2F1C9B99007D0C6A /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00034 /* ShaderPrewarmer.swift */,
+				AACC0001 /* TimeFormatting.swift */,
+			);
+			path = Utility;
+			sourceTree = "<group>";
+		};
+		1D9748692F269F4C007D0C6A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				1D9748662F269F4C007D0C6A /* AppearanceView.swift */,
+				1D9748672F269F4C007D0C6A /* CustomizeHomeView.swift */,
+				BB000002BB000002BB000002 /* LanguageView.swift */,
+				1D9748682F269F4C007D0C6A /* TabBarOrderView.swift */,
+				AA002001AA002001AA002001 /* LibraryGridSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		1DF338D42F3DB109007D0C6A /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338D32F3DB109007D0C6A /* WatchModels.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		1DF338D82F3DB15B007D0C6A /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338D72F3DB15B007D0C6A /* WatchDataProvider.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		1DF338DA2F3DB15B007D0C6A /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338D92F3DB15B007D0C6A /* WatchConnectivityProvider.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1DF338E22F3DB15B007D0C6A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338F32F3DB90C007D0C6A /* WatchAlbumDetailView.swift */,
+				1DF338DB2F3DB15B007D0C6A /* WatchAlbumsListView.swift */,
+				1DF338DC2F3DB15B007D0C6A /* WatchArtistsListView.swift */,
+				1DF338DD2F3DB15B007D0C6A /* WatchDevicesView.swift */,
+				1DF338DE2F3DB15B007D0C6A /* WatchLibraryView.swift */,
+				1DF338DF2F3DB15B007D0C6A /* WatchNowPlayingView.swift */,
+				1DF338E02F3DB15B007D0C6A /* WatchPlaylistsListView.swift */,
+				1DF338E12F3DB15B007D0C6A /* WatchRootView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1DF338E42F3DB15B007D0C6A /* XonoraWatch */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338D82F3DB15B007D0C6A /* Protocols */,
+				1DF338DA2F3DB15B007D0C6A /* Services */,
+				1DF338E22F3DB15B007D0C6A /* Views */,
+				1DF338E32F3DB15B007D0C6A /* XonoraWatchApp.swift */,
+				1DF339012F3DB15B007D0C6A /* PreviewHelpers.swift */,
+				WWW00002 /* Assets.xcassets */,
+			);
+			path = XonoraWatch;
+			sourceTree = "<group>";
+		};
+		EEE00001 = {
+			isa = PBXGroup;
+			children = (
+				1DF338E42F3DB15B007D0C6A /* XonoraWatch */,
+				1DF338D42F3DB109007D0C6A /* Shared */,
+				EEE00002 /* Xonora */,
+				1D4F3CC12F67BF0B007D0C6A /* XonoraIntents */,
+				1D861D2B2F110C3D007D0C6A /* Frameworks */,
+				EEE00003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EEE00002 /* Xonora */ = {
+			isa = PBXGroup;
+			children = (
+				1D0F92312F47A5F2007D0C6A /* Xonora.entitlements */,
+				1D0F92302F47A3D5007D0C6A /* XonoraRelease.entitlements */,
+				BBB00001 /* XonoraApp.swift */,
+				BBB00024 /* SceneDelegate.swift */,
+				BBB00018 /* Info.plist */,
+				BBB00020 /* Assets.xcassets */,
+				EEE00004 /* Models */,
+				EEE00005 /* Services */,
+				1D95557C2F1C9B99007D0C6A /* Utility */,
+				EEE00006 /* Views */,
+				EEE00008 /* ViewModels */,
+				8672FDA034D2B0A475CE9A92 /* Localizable.xcstrings */,
+			);
+			path = Xonora;
+			sourceTree = "<group>";
+		};
+		EEE00003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CCC00001 /* Xonora.app */,
+				9C54D7397A5646B18DC836D6 /* DeviceSwitcherView.swift */,
+				8F82B844DABB481AB979EBE4 /* MultiDeviceManager.swift */,
+				1DF338C02F3DAFBF007D0C6A /* XonoraWatch Watch App.app */,
+				1D4F3CBE2F67BF0B007D0C6A /* XonoraIntents.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EEE00004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1DB0D21C2F42D1C2007D0C6A /* Player.swift */,
+				1DB0D1CB2F429552007D0C6A /* RecentlyPlayedItem.swift */,
+				1D9748622F269EB7007D0C6A /* UserPreferences.swift */,
+				1D95556A2F1C9AA3007D0C6A /* PlaybackHistoryItem.swift */,
+				1D861CD22F0FB2DD007D0C6A /* Color+Xonora.swift */,
+				BBB00010 /* Track.swift */,
+				BBB00011 /* Album.swift */,
+				161E76C61C5D455AA7153021 /* Audiobook.swift */,
+				BBB00012 /* Artist.swift */,
+				1DB0D2192F42D1B1007D0C6A /* UserPreferences.swift */,
+				BBB00028 /* Playlist.swift */,
+				A085818C6ECE4E969EA9CE34 /* Podcast.swift */,
+				57983BE380274D1A87B7CFF7 /* Radio.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EEE00005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				1DF338F52F3DBA1C007D0C6A /* WatchSessionManager.swift */,
+				1D95556C2F1C9AC1007D0C6A /* PlaybackHistoryManager.swift */,
+				1D9555412F1C66A1007D0C6A /* MultiDeviceManager.swift */,
+				BBB00014 /* XonoraClient.swift */,
+				BBB00015 /* PlayerManager.swift */,
+				BBB00019 /* SendspinClient.swift */,
+				BBB00025 /* CarPlaySceneDelegate.swift */,
+				CA000002 /* SiriIntentHandler.swift */,
+				BBB00026 /* MetadataCache.swift */,
+				BBB00027 /* ImageCache.swift */,
+				F1AD5DB8B6A4008C674E7F25 /* KeychainHelper.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EEE00006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1D0530302F3CD458007D0C6A /* AlbumVersionsView.swift */,
+				1D0530312F3CD458007D0C6A /* TrackAlbumsView.swift */,
+				1D0530322F3CD458007D0C6A /* TrackVersionsView.swift */,
+				1D0530282F3C6C6F007D0C6A /* SimilarTracksView.swift */,
+				1D0530262F3B9CE2007D0C6A /* EmptyNowPlayingView.swift */,
+				1D9748692F269F4C007D0C6A /* Settings */,
+				1D9555702F1C9AE5007D0C6A /* GlobalSearchSheet.swift */,
+				1D9555712F1C9AE5007D0C6A /* HomeView.swift */,
+				1D95553F2F1C668A007D0C6A /* DeviceSwitcherView.swift */,
+				BBB00002 /* ContentView.swift */,
+				BBB00003 /* LibraryView.swift */,
+				BBB00004 /* AlbumDetailView.swift */,
+				7217E531267F4F6B878C8FB6 /* AudiobookDetailView.swift */,
+				1FC5A0976F7E4F33B4E5A531 /* AudiobooksView.swift */,
+				BBB00005 /* NowPlayingView.swift */,
+				AAA00040 /* PlayerGroupingView.swift */,
+				BBB00032 /* ArtistDetailView.swift */,
+				BBB00029 /* PlaylistDetailView.swift */,
+				EEE00007 /* Components */,
+				CB7E67397A8A4DB698FE6845 /* PodcastsView.swift */,
+				4DB21A3D9BAA4312A7FC107A /* RadiosView.swift */,
+				D8A076FA33D541D481700B71 /* PodcastDetailView.swift */,
+				7CFE6E8F496D4A6F880DEF34 /* GlobalToolbarModifier.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EEE00007 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AACC0003 /* CompactProgressBar.swift */,
+				1DB0D1CD2F42957B007D0C6A /* FilterChip.swift */,
+				1DB0D1CE2F42957B007D0C6A /* ProviderIcon.swift */,
+				1D05302E2F3CD442007D0C6A /* TrackRow.swift */,
+				1D05302A2F3C6C7D007D0C6A /* ToastView.swift */,
+				1D05302B2F3C6C7D007D0C6A /* TrackCardItem.swift */,
+				AA001001AA001001AA001001 /* MediaListRow.swift */,
+				AACC0005 /* MediaGridItem.swift */,
+				BBB00099 /* HistoryCardItem.swift */,
+				BBB00103 /* LyricsView.swift */,
+				BBB00008 /* TrackRow.swift */,
+				BBB00009 /* PlayerControls.swift */,
+				BBB00101 /* MarqueeText.swift */,
+				BBB00102 /* ChapterListView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		EEE00008 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				BBB00050 /* BarVisibilityManager.swift */,
+				1D95556E2F1C9ACF007D0C6A /* HomeViewModel.swift */,
+				BBB00016 /* LibraryViewModel.swift */,
+				BBB00017 /* PlayerViewModel.swift */,
+				A92A75116A304E8E8D447FDF /* GlobalNavigationViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D4F3CBD2F67BF0B007D0C6A /* XonoraIntents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D4F3CCC2F67BF0B007D0C6A /* Build configuration list for PBXNativeTarget "XonoraIntents" */;
+			buildPhases = (
+				1D4F3CBA2F67BF0B007D0C6A /* Sources */,
+				1D4F3CBB2F67BF0B007D0C6A /* Frameworks */,
+				1D4F3CBC2F67BF0B007D0C6A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				1D4F3CC12F67BF0B007D0C6A /* XonoraIntents */,
+			);
+			name = XonoraIntents;
+			productName = XonoraIntents;
+			productReference = 1D4F3CBE2F67BF0B007D0C6A /* XonoraIntents.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		1DF338BF2F3DAFBF007D0C6A /* XonoraWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DF338CE2F3DAFC1007D0C6A /* Build configuration list for PBXNativeTarget "XonoraWatch Watch App" */;
+			buildPhases = (
+				1DF338BC2F3DAFBF007D0C6A /* Sources */,
+				1DF338BD2F3DAFBF007D0C6A /* Frameworks */,
+				1DF338BE2F3DAFBF007D0C6A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "XonoraWatch Watch App";
+			productName = "XonoraWatch Watch App";
+			productReference = 1DF338C02F3DAFBF007D0C6A /* XonoraWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FFF00001 /* Xonora */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = GGG00002 /* Build configuration list for PBXNativeTarget "Xonora" */;
+			buildPhases = (
+				HHH00001 /* Sources */,
+				DDD00001 /* Frameworks */,
+				III00001 /* Resources */,
+				1DF338CB2F3DAFC1007D0C6A /* Embed Watch Content */,
+				1D4F3CC82F67BF0B007D0C6A /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1DF338C92F3DAFC1007D0C6A /* PBXTargetDependency */,
+				1D4F3CC62F67BF0B007D0C6A /* PBXTargetDependency */,
+			);
+			name = Xonora;
+			productName = Xonora;
+			productReference = CCC00001 /* Xonora.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		JJJ00001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					1D4F3CBD2F67BF0B007D0C6A = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					1DB0D1D52F42CB5B007D0C6A = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					1DF338BF2F3DAFBF007D0C6A = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					FFF00001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = GGG00001 /* Build configuration list for PBXProject "Xonora" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				ar,
+				ca,
+				cs,
+				da,
+				de,
+				el,
+				"en-GB",
+				"en-US",
+				es,
+				"es-419",
+				fi,
+				fr,
+				he,
+				hi,
+				hr,
+				hu,
+				id,
+				it,
+				ja,
+				ko,
+				ms,
+				nl,
+				no,
+				pl,
+				"pt-BR",
+				"pt-PT",
+				ro,
+				ru,
+				sk,
+				sv,
+				th,
+				tr,
+				uk,
+				vi,
+				"zh-Hans",
+				"zh-Hant",
+			);
+			mainGroup = EEE00001;
+			packageReferences = (
+				1D861D2D2F110D01007D0C6A /* XCLocalSwiftPackageReference "SendspinKit" */,
+			);
+			productRefGroup = EEE00003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FFF00001 /* Xonora */,
+				1DF338BF2F3DAFBF007D0C6A /* XonoraWatch Watch App */,
+				1D4F3CBD2F67BF0B007D0C6A /* XonoraIntents */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D4F3CBC2F67BF0B007D0C6A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1DF338BE2F3DAFBF007D0C6A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				WWW00001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		III00001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA00020 /* Assets.xcassets in Resources */,
+				F9C6F2EA8FD9D910B397909C /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D4F3CBA2F67BF0B007D0C6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1DF338BC2F3DAFBF007D0C6A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1DF338E52F3DB15B007D0C6A /* WatchArtistsListView.swift in Sources */,
+				1DF338E62F3DB15B007D0C6A /* WatchLibraryView.swift in Sources */,
+				1DF338E72F3DB15B007D0C6A /* WatchRootView.swift in Sources */,
+				1DF338F42F3DB90C007D0C6A /* WatchAlbumDetailView.swift in Sources */,
+				1DF338E82F3DB15B007D0C6A /* WatchDevicesView.swift in Sources */,
+				1DF338E92F3DB15B007D0C6A /* WatchDataProvider.swift in Sources */,
+				1DF338EA2F3DB15B007D0C6A /* WatchConnectivityProvider.swift in Sources */,
+				1DF338EB2F3DB15B007D0C6A /* XonoraWatchApp.swift in Sources */,
+				1DF339022F3DB15B007D0C6A /* PreviewHelpers.swift in Sources */,
+				1DF338EC2F3DB15B007D0C6A /* WatchAlbumsListView.swift in Sources */,
+				1DF338ED2F3DB15B007D0C6A /* WatchNowPlayingView.swift in Sources */,
+				1DF338EE2F3DB15B007D0C6A /* WatchPlaylistsListView.swift in Sources */,
+				1DF338D52F3DB109007D0C6A /* WatchModels.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		HHH00001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA5EFEE1053E4097801E8970 /* GlobalNavigationViewModel.swift in Sources */,
+				BF839FB2619F431187A6EF5B /* GlobalToolbarModifier.swift in Sources */,
+				AAA00001 /* XonoraApp.swift in Sources */,
+				1D9555722F1C9AE5007D0C6A /* GlobalSearchSheet.swift in Sources */,
+				1D9555732F1C9AE5007D0C6A /* HomeView.swift in Sources */,
+				AAA00002 /* ContentView.swift in Sources */,
+				1D0530292F3C6C6F007D0C6A /* SimilarTracksView.swift in Sources */,
+				1D0530272F3B9CE2007D0C6A /* EmptyNowPlayingView.swift in Sources */,
+				1D97486A2F269F4C007D0C6A /* AppearanceView.swift in Sources */,
+				BB000001BB000001BB000001 /* LanguageView.swift in Sources */,
+				1D97486B2F269F4C007D0C6A /* CustomizeHomeView.swift in Sources */,
+				1D97486C2F269F4C007D0C6A /* TabBarOrderView.swift in Sources */,
+				AA002002AA002002AA002002 /* LibraryGridSettingsView.swift in Sources */,
+				AAA00003 /* LibraryView.swift in Sources */,
+				AAA00004 /* AlbumDetailView.swift in Sources */,
+				1D95556B2F1C9AA3007D0C6A /* PlaybackHistoryItem.swift in Sources */,
+				AAA00005 /* NowPlayingView.swift in Sources */,
+				1DB0D21A2F42D1B1007D0C6A /* UserPreferences.swift in Sources */,
+				AACC0006 /* MediaGridItem.swift in Sources */,
+				AAA00099 /* HistoryCardItem.swift in Sources */,
+				1DB0D21D2F42D1C2007D0C6A /* Player.swift in Sources */,
+				AAA00009 /* PlayerControls.swift in Sources */,
+				1DB0D1CC2F429552007D0C6A /* RecentlyPlayedItem.swift in Sources */,
+				AAA00010 /* Track.swift in Sources */,
+				AAA00011 /* Album.swift in Sources */,
+				D10E1F34107B4CE3822FEF8D /* AudiobookDetailView.swift in Sources */,
+				0C8A75B4140C49569B5AB95B /* Audiobook.swift in Sources */,
+				AAA00012 /* Artist.swift in Sources */,
+				1D95556D2F1C9AC1007D0C6A /* PlaybackHistoryManager.swift in Sources */,
+				AAA00014 /* XonoraClient.swift in Sources */,
+				AAA00015 /* PlayerManager.swift in Sources */,
+				AAA00016 /* LibraryViewModel.swift in Sources */,
+				AAA00017 /* PlayerViewModel.swift in Sources */,
+				AAA00019 /* BarVisibilityManager.swift in Sources */,
+				AAA00018 /* SendspinClient.swift in Sources */,
+				AAA00024 /* SceneDelegate.swift in Sources */,
+				1D9555422F1C66A1007D0C6A /* MultiDeviceManager.swift in Sources */,
+				AAA00025 /* CarPlaySceneDelegate.swift in Sources */,
+				CA000001 /* SiriIntentHandler.swift in Sources */,
+				AAA00026 /* MetadataCache.swift in Sources */,
+				AAA00027 /* ImageCache.swift in Sources */,
+				1D861CD32F0FB2DD007D0C6A /* Color+Xonora.swift in Sources */,
+				AAA00028 /* Playlist.swift in Sources */,
+				AAA00029 /* PlaylistDetailView.swift in Sources */,
+				1D0530332F3CD458007D0C6A /* TrackVersionsView.swift in Sources */,
+				1D0530342F3CD458007D0C6A /* AlbumVersionsView.swift in Sources */,
+				1D0530352F3CD458007D0C6A /* TrackAlbumsView.swift in Sources */,
+				1D05302C2F3C6C7D007D0C6A /* TrackCardItem.swift in Sources */,
+				AA001002AA001002AA001002 /* MediaListRow.swift in Sources */,
+				1D05302D2F3C6C7D007D0C6A /* ToastView.swift in Sources */,
+				1DB0D1CF2F42957B007D0C6A /* ProviderIcon.swift in Sources */,
+				1DB0D1D02F42957B007D0C6A /* FilterChip.swift in Sources */,
+				1D05302F2F3CD442007D0C6A /* TrackRow.swift in Sources */,
+				AAA00032 /* ArtistDetailView.swift in Sources */,
+				477F363586044F079D959C6E /* AudiobooksView.swift in Sources */,
+				1D9555402F1C668A007D0C6A /* DeviceSwitcherView.swift in Sources */,
+				3BE060BAE5AD4AD59FFAD088 /* Podcast.swift in Sources */,
+				BF46F0A86C9946EFACC17CF2 /* Radio.swift in Sources */,
+				FF7F1727137F43B79D416E11 /* PodcastsView.swift in Sources */,
+				1D95556F2F1C9ACF007D0C6A /* HomeViewModel.swift in Sources */,
+				1DF338D62F3DB109007D0C6A /* WatchModels.swift in Sources */,
+				CC32B5995DC94F7EA0989CA6 /* RadiosView.swift in Sources */,
+				65AF0966B82D4AE1AF02FC55 /* PodcastDetailView.swift in Sources */,
+				AAA00034 /* ShaderPrewarmer.swift in Sources */,
+				AACC0002 /* TimeFormatting.swift in Sources */,
+				AACC0004 /* CompactProgressBar.swift in Sources */,
+				AAA00101 /* MarqueeText.swift in Sources */,
+				1DF338F62F3DBA1C007D0C6A /* WatchSessionManager.swift in Sources */,
+				AAA00102 /* ChapterListView.swift in Sources */,
+				AAC00103 /* LyricsView.swift in Sources */,
+				AAA00041 /* PlayerGroupingView.swift in Sources */,
+				1DBE390B0CC779C24BCCD6FC /* KeychainHelper.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1D4F3CC62F67BF0B007D0C6A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1D4F3CBD2F67BF0B007D0C6A /* XonoraIntents */;
+			targetProxy = 1D4F3CC52F67BF0B007D0C6A /* PBXContainerItemProxy */;
+		};
+		1DF338C92F3DAFC1007D0C6A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1DF338BF2F3DAFBF007D0C6A /* XonoraWatch Watch App */;
+			targetProxy = 1DF338C82F3DAFC1007D0C6A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1D4F3CC92F67BF0B007D0C6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XonoraIntents/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = XonoraIntents;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora.XonoraIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1D4F3CCA2F67BF0B007D0C6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = XonoraIntents/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = XonoraIntents;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora.XonoraIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1DF338CC2F3DAFC1007D0C6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = XonoraWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ma.xonora;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		1DF338CD2F3DAFC1007D0C6A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = XonoraWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.ma.xonora;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		KKK00001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		KKK00002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		LLL00001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Xonora/Xonora.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Xonora/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Xonora;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Xonora uses the local network to discover and connect to your Music Assistant server and Sendspin devices.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		LLL00002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Xonora/XonoraRelease.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Xonora/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Xonora;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Xonora uses the local network to discover and connect to your Music Assistant server and Sendspin devices.";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.8;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ma.xonora;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D4F3CCC2F67BF0B007D0C6A /* Build configuration list for PBXNativeTarget "XonoraIntents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D4F3CC92F67BF0B007D0C6A /* Debug */,
+				1D4F3CCA2F67BF0B007D0C6A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DF338CE2F3DAFC1007D0C6A /* Build configuration list for PBXNativeTarget "XonoraWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DF338CC2F3DAFC1007D0C6A /* Debug */,
+				1DF338CD2F3DAFC1007D0C6A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		GGG00001 /* Build configuration list for PBXProject "Xonora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				KKK00001 /* Debug */,
+				KKK00002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		GGG00002 /* Build configuration list for PBXNativeTarget "Xonora" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				LLL00001 /* Debug */,
+				LLL00002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		1D861D2D2F110D01007D0C6A /* XCLocalSwiftPackageReference "SendspinKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = SendspinKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1D861D2E2F110D01007D0C6A /* SendspinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SendspinKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = JJJ00001 /* Project object */;
+}

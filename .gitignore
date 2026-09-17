@@ -1,0 +1,51 @@
+# Xcode
+.DS_Store
+*/.DS_Store
+**/.DS_Store
+*.swp
+*~.nib
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
+
+# Build generated
+build/
+DerivedData/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Swift PM
+.swiftpm/
+.build/
+SendspinKit/.build/
+SendspinKit/build/
+
+# Python tooling cache
+__pycache__/
+*.pyc
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Misc
+*.ipa
+*.dSYM.zip
+*.dSYM
+Packaging.log
+*.zip
+Xonora.xcarchive/
+build.log
+profile.plist
+DistributionSummary.plist

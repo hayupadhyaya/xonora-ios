@@ -1,0 +1,55 @@
+Xonora for iOS, watchOS and CarPlay (original Swift app, v1.0.8)
+Copyright (C) 2025-2026 Hay Upadhyaya
+
+Xonora is licensed under the GNU General Public License, version 3 only
+(GPL-3.0-only). See LICENSE for the full text.
+
+This repository bundles the third-party components listed below. Each
+keeps its own licence. All of them are compatible with GPL-3.0, so the
+combined work may be distributed under GPL-3.0-only while the components
+themselves remain under their original terms.
+
+-----------------------------------------------------------------------
+
+1. SendspinKit                              directory: SendspinKit/
+   Licence:  Apache License 2.0 (SendspinKit/LICENSE)
+   Upstream: https://github.com/Sendspin/SendspinKit
+   Swift client for the Sendspin synchronized-audio protocol
+   (https://github.com/Sendspin/spec). Vendored into Xonora from an
+   October 2025 snapshot of upstream and modified extensively since
+   (audio player and decoder, client, clock sync, discovery, message
+   models, an added WebSocket transport); it has not tracked upstream
+   after that point. The whole directory, including those
+   modifications, stays under Apache-2.0.
+
+2. swift-opus 0.0.2                          Swift package dependency
+   Licence:  BSD-3-Clause
+   Upstream: https://github.com/alta/swift-opus
+   Copyright (c) 2021 Alta Software. Wraps libopus (BSD-3-Clause,
+   Xiph.Org Foundation).
+
+3. flac-binary-xcframework 0.2.0             Swift package dependency
+   Licence:  BSD-3-Clause
+   Upstream: https://github.com/sbooth/flac-binary-xcframework
+   Prebuilt libFLAC (Copyright (C) 2000-2009 Josh Coalson,
+   2011-2023 Xiph.Org Foundation; BSD-3-Clause).
+
+4. ogg-binary-xcframework 0.1.x              Swift package dependency
+   Licence:  BSD-3-Clause
+   Upstream: https://github.com/sbooth/ogg-binary-xcframework
+   Prebuilt libogg (Copyright (c) 2002 Xiph.Org Foundation; BSD-3-Clause).
+
+5. Starscream 4.0.8                          used only by
+                                             SendspinKit/Examples/CLIPlayer
+   Licence:  MIT
+   Upstream: https://github.com/daltoniam/Starscream
+   Not linked into the iOS app.
+
+-----------------------------------------------------------------------
+
+Apple frameworks (SwiftUI, AVFoundation, CarPlay, Intents, WatchConnectivity,
+MediaPlayer, Network) are used under the Apple SDK licence and are not
+redistributed here.
+
+Music Assistant (https://music-assistant.io/) is a separate project; this
+app is an independent client and is not affiliated with it.
